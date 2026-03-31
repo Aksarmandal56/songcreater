@@ -1,0 +1,47 @@
+[
+  {
+    "_id": {
+      "$oid": "507f1f77bcf86cd799439014"
+    },
+    "email": "admin@songcraft.com",
+    "password": "$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+    "name": "Admin User",
+    "role": "admin",
+    "created_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    },
+    "updated_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "507f1f77bcf86cd799439015"
+    },
+    "email": "john.doe@example.com",
+    "password": "$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+    "name": "John Doe",
+    "role": "user",
+    "created_at": {
+      "$date": "2024-01-15T00:00:00.000Z"
+    },
+    "updated_at": {
+      "$date": "2024-01-15T00:00:00.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "507f1f77bcf86cd799439016"
+    },
+    "email": "sarah.wilson@example.com",
+    "password": "$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+    "name": "Sarah Wilson",
+    "role": "user",
+    "created_at": {
+      "$date": "2024-01-20T00:00:00.000Z"
+    },
+    "updated_at": {
+      "$date": "2024-01-20T00:00:00.000Z"
+    }
+  }
+]

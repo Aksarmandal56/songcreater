@@ -1,0 +1,92 @@
+[
+  {
+    "_id": {
+      "$oid": "507f1f77bcf86cd799439025"
+    },
+    "title": "Birthday Surprise Song",
+    "genre": "Pop",
+    "duration": "3:05",
+    "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "created_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    },
+    "updated_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "507f1f77bcf86cd799439026"
+    },
+    "title": "Brand Anthem Track",
+    "genre": "Corporate",
+    "duration": "3:40",
+    "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+    "created_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    },
+    "updated_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "507f1f77bcf86cd799439027"
+    },
+    "title": "Love Dedication Ballad",
+    "genre": "Romantic",
+    "duration": "3:20",
+    "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "created_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    },
+    "updated_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "507f1f77bcf86cd799439028"
+    },
+    "title": "Motivational Startup Jingle",
+    "genre": "Corporate",
+    "duration": "2:58",
+    "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    "created_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    },
+    "updated_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "507f1f77bcf86cd799439029"
+    },
+    "title": "College Anthem",
+    "genre": "Institutional",
+    "duration": "3:15",
+    "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+    "created_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    },
+    "updated_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "507f1f77bcf86cd799439030"
+    },
+    "title": "Festival Celebration Song",
+    "genre": "Pop",
+    "duration": "3:10",
+    "audio_url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
+    "created_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    },
+    "updated_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    }
+  }
+]

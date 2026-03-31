@@ -1,0 +1,50 @@
+[
+  {
+    "_id": {
+      "$oid": "507f1f77bcf86cd799439011"
+    },
+    "name": "Personal Song",
+    "price": 3999,
+    "delivery_hours": 24,
+    "description": "Perfect for birthdays, love songs, friendship, and motivation.",
+    "category": "Personal",
+    "created_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    },
+    "updated_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "507f1f77bcf86cd799439012"
+    },
+    "name": "Small Business Song",
+    "price": 9100,
+    "delivery_hours": 72,
+    "description": "Brand anthems, product songs, and promotional tracks.",
+    "category": "Business",
+    "created_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    },
+    "updated_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "507f1f77bcf86cd799439013"
+    },
+    "name": "Institution Song",
+    "price": 21000,
+    "delivery_hours": 160,
+    "description": "School anthems, college songs, political campaigns, and NGO tracks.",
+    "category": "Institution",
+    "created_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    },
+    "updated_at": {
+      "$date": "2024-01-01T00:00:00.000Z"
+    }
+  }
+]

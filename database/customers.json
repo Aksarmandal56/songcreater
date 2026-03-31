@@ -1,0 +1,62 @@
+[
+  {
+    "_id": {
+      "$oid": "507f1f77bcf86cd799439017"
+    },
+    "name": "Rajesh Kumar",
+    "email": "rajesh.kumar@email.com",
+    "phone": "+91-9876543210",
+    "total_orders": 2,
+    "created_at": {
+      "$date": "2024-01-10T00:00:00.000Z"
+    },
+    "updated_at": {
+      "$date": "2024-02-15T00:00:00.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "507f1f77bcf86cd799439018"
+    },
+    "name": "Priya Sharma",
+    "email": "priya.sharma@email.com",
+    "phone": "+91-9876543211",
+    "total_orders": 1,
+    "created_at": {
+      "$date": "2024-01-25T00:00:00.000Z"
+    },
+    "updated_at": {
+      "$date": "2024-01-25T00:00:00.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "507f1f77bcf86cd799439019"
+    },
+    "name": "Amit Patel",
+    "email": "amit.patel@email.com",
+    "phone": "+91-9876543212",
+    "total_orders": 3,
+    "created_at": {
+      "$date": "2024-02-01T00:00:00.000Z"
+    },
+    "updated_at": {
+      "$date": "2024-02-20T00:00:00.000Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "507f1f77bcf86cd799439020"
+    },
+    "name": "Sunita Gupta",
+    "email": "sunita.gupta@email.com",
+    "phone": "+91-9876543213",
+    "total_orders": 1,
+    "created_at": {
+      "$date": "2024-02-10T00:00:00.000Z"
+    },
+    "updated_at": {
+      "$date": "2024-02-10T00:00:00.000Z"
+    }
+  }
+]
