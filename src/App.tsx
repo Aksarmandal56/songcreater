@@ -20,7 +20,7 @@ import AdminLogin from './pages/AdminLogin';
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/songcreater">
         <div className="min-h-screen bg-[#0c0c0f] font-sans">
           <Navbar />
           <Routes>
