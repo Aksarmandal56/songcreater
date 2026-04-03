@@ -20,8 +20,9 @@ export default function AdminLogin() {
         { email, password }
       );
 
-      if (!['admin', 'operator'].includes(response.user.role)) {
-        setError('Access denied. Admin or operator account required.');
+      const allowedStaffRoles = ['admin', 'operator', 'lyrics_team', 'music_production', 'qa_team', 'support'];
+      if (!allowedStaffRoles.includes(response.user.role)) {
+        setError('Access denied. Staff account required (admin/operator/production/QA/support).');
         setLoading(false);
         return;
       }
