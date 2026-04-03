@@ -5,6 +5,7 @@ import PricingCard from '../components/PricingCard';
 import AudioPlayerCard from '../components/AudioPlayerCard';
 import TestimonialCard from '../components/TestimonialCard';
 import SectionHeading from '../components/SectionHeading';
+import BannerSlider from '../components/BannerSlider';
 
 interface Package {
   _id: string;
@@ -174,6 +175,30 @@ export default function MarketingHome() {
 
   return (
     <div className="bg-[#0c0c0f] text-white">
+      {/* Banner Section */}
+      <section className="mx-auto max-w-6xl px-6 py-16">
+        <SectionHeading
+          eyebrow="Featured Work"
+          title="Our Recent Creations"
+          subtitle="Showcasing the diverse range of custom songs we've created for our clients."
+        />
+        <BannerSlider
+          banners={[
+            { id: 1, src: '/songcreater/1.png', alt: 'Banner 1' },
+            { id: 2, src: '/songcreater/2.png', alt: 'Banner 2' },
+            { id: 3, src: '/songcreater/3.png', alt: 'Banner 3' },
+            { id: 4, src: '/songcreater/4.png', alt: 'Banner 4' },
+            { id: 5, src: '/songcreater/5.png', alt: 'Banner 5' },
+            { id: 6, src: '/songcreater/6.png', alt: 'Banner 6' },
+            { id: 7, src: '/songcreater/7.png', alt: 'Banner 7' },
+            { id: 8, src: '/songcreater/8.png', alt: 'Banner 8' },
+            { id: 9, src: '/songcreater/9.png', alt: 'Banner 9' },
+          ]}
+          autoPlay={true}
+          autoPlayInterval={4000}
+        />
+      </section>
+
       <section className="mx-auto flex max-w-6xl flex-col items-center gap-10 px-6 py-16 lg:flex-row">
         <div className="flex-1">
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#00D4FF]">Music meets storytelling</p>
