@@ -25,6 +25,7 @@ import analyticsRoutes from './server/routes/analytics.js';
 import downloadsRoutes from './server/routes/downloads.js';
 import adminRoutes from './server/routes/admin.js';
 import notificationsRoutes from './server/routes/notifications.js';
+import User from './server/models/User.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -42,7 +43,23 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Connect to MongoDB Atlas
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB Atlas connected'))
+  .then(async () => {
+    console.log('MongoDB Atlas connected');
+
+    // Ensure default admin exists
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@songcraft.com';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'password';
+    const adminName = process.env.ADMIN_NAME || 'Admin User';
+
+    const existingAdmin = await User.findOne({ email: adminEmail });
+    if (!existingAdmin) {
+      console.log(`Creating default admin user: ${adminEmail}`);
+      await new User({ email: adminEmail, password: adminPassword, name: adminName, role: 'admin' }).save();
+      console.log('Default admin user created with password:', adminPassword);
+    } else {
+      console.log(`Admin user already exists: ${adminEmail}`);
+    }
+  })
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Routes
