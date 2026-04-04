@@ -73,7 +73,7 @@ export default function AdminLogin() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@songcraft.com"
+                placeholder="admin@songcraft.ai"
                 className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/30 focus:border-[#6C4DFF]/60 focus:outline-none focus:ring-1 focus:ring-[#6C4DFF]/40 transition"
               />
             </div>
@@ -116,7 +116,7 @@ export default function AdminLogin() {
             This portal is for admin and operations staff only.
           </p>
           <p className="mt-1 text-xs text-white/30">
-            Customer login → <a href="/login" className="text-[#6C4DFF]/70 hover:text-[#6C4DFF]">songcraft.com/login</a>
+            Customer login → <a href="/login" className="text-[#6C4DFF]/70 hover:text-[#6C4DFF]">songcraft.ai/login</a>
           </p>
         </div>
       </div>
