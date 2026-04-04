@@ -156,16 +156,16 @@ export default function MarketingHome() {
   ];
 
   const testimonialData = testimonials.length > 0 ? testimonials : [
-    { _id: '1', name: 'Aarav S.', quote: 'The birthday track was magical—studio quality and fast delivery.', rating: 5, photo_url: 'https://via.placeholder.com/48x48.png?text=A' },
-    { _id: '2', name: 'Priya M.', quote: 'Our brand anthem exceeded expectations, and the whole team loved it.', rating: 5, photo_url: 'https://via.placeholder.com/48x48.png?text=P' },
-    { _id: '3', name: 'Rohit T.', quote: 'The corporate jingle gave our campaign serious momentum.', rating: 5, photo_url: 'https://via.placeholder.com/48x48.png?text=R' },
-    { _id: '4', name: 'Sneha K.', quote: 'High-quality production and fast turnaround—exactly what we needed.', rating: 5, photo_url: 'https://via.placeholder.com/48x48.png?text=S' },
-    { _id: '5', name: 'Neha P.', quote: 'I love the personalized storytelling in my custom song.', rating: 5, photo_url: 'https://via.placeholder.com/48x48.png?text=N' },
-    { _id: '6', name: 'Vikram D.', quote: 'From brief to final delivery, the professionalism was great.', rating: 5, photo_url: 'https://via.placeholder.com/48x48.png?text=V' },
-    { _id: '7', name: 'Meera L.', quote: 'Studio sound is crisp and modern—perfect for social sharing.', rating: 5, photo_url: 'https://via.placeholder.com/48x48.png?text=M' },
-    { _id: '8', name: 'Aditya G.', quote: 'The campaign theme they made boosted our event turnout significantly.', rating: 5, photo_url: 'https://via.placeholder.com/48x48.png?text=Ad' },
-    { _id: '9', name: 'Kavya R.', quote: 'Amazing singer selection and/mixing—phenomenal results.', rating: 5, photo_url: 'https://via.placeholder.com/48x48.png?text=K' },
-    { _id: '10', name: 'Sahil J.', quote: 'I recommend ExpressinMusic for every brand music need.', rating: 5, photo_url: 'https://via.placeholder.com/48x48.png?text=S' },
+    { _id: '1', name: 'Aarav S.', quote: 'The birthday track was magical—studio quality and fast delivery.', rating: 5, photo_url: 'https://ui-avatars.com/api/?name=Aarav+S&background=6C4DFF&color=fff&size=96' },
+    { _id: '2', name: 'Priya M.', quote: 'Our brand anthem exceeded expectations, and the whole team loved it.', rating: 5, photo_url: 'https://ui-avatars.com/api/?name=Priya+M&background=FF3B81&color=fff&size=96' },
+    { _id: '3', name: 'Rohit T.', quote: 'The corporate jingle gave our campaign serious momentum.', rating: 5, photo_url: 'https://ui-avatars.com/api/?name=Rohit+T&background=00D4FF&color=fff&size=96' },
+    { _id: '4', name: 'Sneha K.', quote: 'High-quality production and fast turnaround—exactly what we needed.', rating: 5, photo_url: 'https://ui-avatars.com/api/?name=Sneha+K&background=FF6B35&color=fff&size=96' },
+    { _id: '5', name: 'Neha P.', quote: 'I love the personalized storytelling in my custom song.', rating: 5, photo_url: 'https://ui-avatars.com/api/?name=Neha+P&background=7B2FF7&color=fff&size=96' },
+    { _id: '6', name: 'Vikram D.', quote: 'From brief to final delivery, the professionalism was great.', rating: 5, photo_url: 'https://ui-avatars.com/api/?name=Vikram+D&background=00BFA5&color=fff&size=96' },
+    { _id: '7', name: 'Meera L.', quote: 'Studio sound is crisp and modern—perfect for social sharing.', rating: 5, photo_url: 'https://ui-avatars.com/api/?name=Meera+L&background=E91E63&color=fff&size=96' },
+    { _id: '8', name: 'Aditya G.', quote: 'The campaign theme they made boosted our event turnout significantly.', rating: 5, photo_url: 'https://ui-avatars.com/api/?name=Aditya+G&background=FF9800&color=fff&size=96' },
+    { _id: '9', name: 'Kavya R.', quote: 'Amazing singer selection and/mixing—phenomenal results.', rating: 5, photo_url: 'https://ui-avatars.com/api/?name=Kavya+R&background=4CAF50&color=fff&size=96' },
+    { _id: '10', name: 'Sahil J.', quote: 'I recommend ExpressinMusic for every brand music need.', rating: 5, photo_url: 'https://ui-avatars.com/api/?name=Sahil+J&background=2196F3&color=fff&size=96' },
   ];
 
   const logoData = logos.length > 0 ? logos : [
@@ -177,22 +177,17 @@ export default function MarketingHome() {
     <div className="bg-[#0c0c0f] text-white">
       {/* Banner Section */}
       <section className="mx-auto max-w-6xl px-6 py-16">
-        <SectionHeading
-          eyebrow="Featured Work"
-          title="Our Recent Creations"
-          subtitle="Showcasing the diverse range of custom songs we've created for our clients."
-        />
         <BannerSlider
           banners={[
-            { id: 1, src: '/songcreater/1.png', alt: 'Banner 1' },
-            { id: 2, src: '/songcreater/2.png', alt: 'Banner 2' },
-            { id: 3, src: '/songcreater/3.png', alt: 'Banner 3' },
-            { id: 4, src: '/songcreater/4.png', alt: 'Banner 4' },
-            { id: 5, src: '/songcreater/5.png', alt: 'Banner 5' },
-            { id: 6, src: '/songcreater/6.png', alt: 'Banner 6' },
-            { id: 7, src: '/songcreater/7.png', alt: 'Banner 7' },
-            { id: 8, src: '/songcreater/8.png', alt: 'Banner 8' },
-            { id: 9, src: '/songcreater/9.png', alt: 'Banner 9' },
+            { id: 1, src: '/1.png', alt: 'Banner 1' },
+            { id: 2, src: '/2.png', alt: 'Banner 2' },
+            { id: 3, src: '/3.png', alt: 'Banner 3' },
+            { id: 4, src: '/4.png', alt: 'Banner 4' },
+            { id: 5, src: '/5.png', alt: 'Banner 5' },
+            { id: 6, src: '/6.png', alt: 'Banner 6' },
+            { id: 7, src: '/7.png', alt: 'Banner 7' },
+            { id: 8, src: '/8.png', alt: 'Banner 8' },
+            { id: 9, src: '/9.png', alt: 'Banner 9' },
           ]}
           autoPlay={true}
           autoPlayInterval={4000}

@@ -19,13 +19,7 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#0c0c0f]/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-[#6C4DFF] via-[#FF3B81] to-[#00D4FF]"></div>
-          <div>
-            <p className="text-lg font-semibold text-white">SongCraft AI</p>
-            <p className="text-xs text-white/60">Design + Product System</p>
-          </div>
-        </div>
+            <img src="/logo.png" alt="Express InMusic" className="h-12 object-contain" />
         <div className="hidden items-center gap-4 text-sm text-white/70 lg:flex">
           {publicLinks.map((link) => (
             <NavLink

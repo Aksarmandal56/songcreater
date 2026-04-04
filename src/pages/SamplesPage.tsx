@@ -38,7 +38,7 @@ export default function SamplesPage() {
       <div className="mx-auto max-w-6xl">
         <SectionHeading
           eyebrow="Sample library"
-          title="Listen to the SongCraft vault"
+          title="Listen to the Express In Music vault"
           subtitle="Audio previews spanning birthday anthems, brand jingles, and campaign tracks."
         />
         <div className="grid gap-6 md:grid-cols-2">

@@ -347,11 +347,9 @@ export default function UserDashboard() {
                 <div className="relative">
                   {photoUrl ? (
                     <img src={photoUrl} alt="Profile" className="h-20 w-20 rounded-full object-cover border-2 border-[#6C4DFF]/50" />
-                  ) : (
-                    <div className="h-20 w-20 rounded-full bg-[#6C4DFF]/20 border-2 border-[#6C4DFF]/30 flex items-center justify-center text-2xl font-bold text-[#6C4DFF]">
-                      {user?.name?.charAt(0).toUpperCase()}
-                    </div>
-                  )}
+                ) : (
+                  <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'U')}&background=6C4DFF&color=fff&size=96`} alt="Profile" className="h-20 w-20 rounded-full object-cover border-2 border-[#6C4DFF]/50" />
+                )}
                 </div>
                 <div>
                   <p className="text-sm font-medium">{user?.name}</p>

@@ -79,7 +79,7 @@ export default function DesignSystem() {
         <SectionHeading
           eyebrow="Design System"
           title="Foundation, Components, and Tokens"
-          subtitle="A unified system for the SongCraft AI brand, covering colors, typography, and component library snapshots."
+          subtitle="A unified system for the Express In Music brand, covering colors, typography, and component library snapshots."
         />
         <div className="grid gap-6 md:grid-cols-5">
           {[

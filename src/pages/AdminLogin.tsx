@@ -45,7 +45,7 @@ export default function AdminLogin() {
         <div className="mb-8 text-center">
           <div className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2">
             <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-[#6C4DFF] to-[#FF3B81] bg-clip-text text-transparent">
-              SongCraft
+              Express In Music
             </span>
             <span className="rounded-full bg-[#6C4DFF]/20 px-2 py-0.5 text-xs font-medium text-[#a48bff]">
               Admin

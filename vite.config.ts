@@ -11,5 +11,5 @@ export default defineConfig(async () => {
   } catch {
     // Optional plugin not found, continue without it
   }
-  return { plugins, base: '/songcreater/' };
+  return { plugins, base: '/' };
 })
