@@ -83,6 +83,8 @@ router.post('/create', authenticateToken, [
       amount_paise: amount * 100,
       currency: 'INR',
       order_code: order.order_code,
+      customer_email: order.customer_email,
+      key_id: gw.key_id,
       razorpay_available: !!rzp
     });
   } catch (error) {

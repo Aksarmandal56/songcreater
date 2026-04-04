@@ -188,8 +188,8 @@ export default function OrderFlow() {
         reference_song: form.referenceSong,
       };
 
-      await postJson('/orders', orderData);
-      navigate('/dashboard');
+      const order = await postJson('/orders', orderData);
+      navigate(`/payment/${order._id || order.id}`);
     } catch (err) {
       console.error('Order submission error:', err);
       setError('Failed to submit order. Please try again.');

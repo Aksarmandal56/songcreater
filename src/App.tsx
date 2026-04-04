@@ -16,6 +16,7 @@ import SamplesPage from './pages/SamplesPage';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AdminLogin from './pages/AdminLogin';
+import PaymentCheckout from './pages/PaymentCheckout';
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
             <Route path="/samples" element={<SamplesPage />} />
             <Route path="/create-song" element={<CreateSong />} />
             <Route path="/order" element={<OrderFlow />} />
+          <Route path="/payment/:orderId" element={<PaymentCheckout />} />
             <Route path="/premium" element={<PremiumLanding />} />
             <Route
               path="/dashboard"
