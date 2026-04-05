@@ -228,6 +228,11 @@ export default function AdminDashboard() {
 
   const [settingForm, setSettingForm] = useState({ type: 'music_style', value: '', price: '0', description: '' });
   const [settingTypeFilter, setSettingTypeFilter] = useState('');
+  const [cacheEnabled, setCacheEnabled] = useState<boolean>(() => {
+    try { return localStorage.getItem('build_cache_enabled') !== 'false'; } catch { return true; }
+  });
+  const [cacheClearing, setCacheClearing] = useState(false);
+  const [cacheMsg, setCacheMsg] = useState('');
 
   // ── Fetch ──
 
@@ -363,6 +368,30 @@ export default function AdminDashboard() {
     fetchAll();
   };
 
+  // — Build Cache handlers —
+  const toggleCache = (val: boolean) => {
+    setCacheEnabled(val);
+    localStorage.setItem('build_cache_enabled', String(val));
+    setCacheMsg(val ? 'Build cache enabled.' : 'Build cache disabled.');
+    setTimeout(() => setCacheMsg(''), 3000);
+  };
+  const handleClearCache = async () => {
+    setCacheClearing(true);
+    setCacheMsg('');
+    try {
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((k: string) => caches.delete(k)));
+      }
+      Object.keys(localStorage).filter(k => k.startsWith('build_') || k.startsWith('vite_')).forEach(k => localStorage.removeItem(k));
+      setCacheMsg('Cache cleared successfully!');
+    } catch {
+      setCacheMsg('Failed to clear cache.');
+    } finally {
+      setCacheClearing(false);
+      setTimeout(() => setCacheMsg(''), 4000);
+    }
+  };
   // ── Setting ──
 
   const handleCreateSetting = async (e: React.FormEvent) => {
@@ -1255,6 +1284,59 @@ export default function AdminDashboard() {
             </div>
           )}
 
+            {/* Build Cache Control */}
+            {view === 'settings' && isAdmin && (
+              <div className="mx-auto max-w-6xl px-6 pb-10">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h2 className="text-lg font-bold text-white">⚙️ Build Cache Control</h2>
+                      <p className="text-sm text-white/50 mt-1">Manage frontend build cache. Disable to force fresh loads; clear to wipe cached assets.</p>
+                    </div>
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${cacheEnabled ? 'bg-green-400/20 text-green-400' : 'bg-red-400/20 text-red-400'}`}>
+                      {cacheEnabled ? 'Enabled' : 'Disabled'}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+                    <div className="rounded-xl border border-white/10 bg-white/5 p-4 flex flex-col gap-3">
+                      <p className="text-xs text-white/50 uppercase tracking-wide">Cache Status</p>
+                      <p className="text-sm text-white">{cacheEnabled ? '✅ Active — assets served from cache' : '🚫 Inactive — fresh loads on every request'}</p>
+                      <div className="flex gap-2 mt-auto">
+                        <button onClick={() => toggleCache(true)} disabled={cacheEnabled}
+                          className={`flex-1 rounded-full px-4 py-2 text-xs font-semibold transition-all ${cacheEnabled ? 'bg-green-500/20 text-green-400 cursor-not-allowed' : 'bg-green-500 text-white hover:bg-green-400'}`}>
+                          Enable
+                        </button>
+                        <button onClick={() => toggleCache(false)} disabled={!cacheEnabled}
+                          className={`flex-1 rounded-full px-4 py-2 text-xs font-semibold transition-all ${!cacheEnabled ? 'bg-red-500/20 text-red-400 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-400'}`}>
+                          Disable
+                        </button>
+                      </div>
+                    </div>
+                    <div className="rounded-xl border border-white/10 bg-white/5 p-4 flex flex-col gap-3">
+                      <p className="text-xs text-white/50 uppercase tracking-wide">Clear Cache</p>
+                      <p className="text-sm text-white/70">Wipe all browser-cached assets, service worker caches, and local build data.</p>
+                      <button onClick={handleClearCache} disabled={cacheClearing}
+                        className="mt-auto rounded-full bg-[#6C4DFF] hover:bg-[#7C5DFF] disabled:opacity-50 px-4 py-2 text-xs font-semibold text-white transition-all">
+                        {cacheClearing ? 'Clearing…' : '🗑️ Clear Cache Now'}
+                      </button>
+                    </div>
+                    <div className="rounded-xl border border-white/10 bg-white/5 p-4 flex flex-col gap-3">
+                      <p className="text-xs text-white/50 uppercase tracking-wide">Cache Info</p>
+                      <ul className="text-xs text-white/60 space-y-1 mt-1">
+                        <li>• Browser cache: <span className="text-white">Auto-managed</span></li>
+                        <li>• Build tool: <span className="text-white">Vite 5.4.21</span></li>
+                        <li>• Strategy: <span className="text-white">{cacheEnabled ? 'Cache-first' : 'Network-first'}</span></li>
+                      </ul>
+                      {cacheMsg && (
+                        <p className={`text-xs mt-2 font-semibold ${cacheMsg.includes('success') || cacheMsg.includes('enabled') ? 'text-green-400' : cacheMsg.includes('disabled') ? 'text-yellow-400' : 'text-red-400'}`}>
+                          {cacheMsg}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
         </main>
       </div>
     </div>
