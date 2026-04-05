@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 export default function Footer() {
   return (
     <footer className="border-t border-white/10 bg-[#0c0c0f] py-10 text-white/70">
@@ -9,6 +11,12 @@ export default function Footer() {
         <div className="flex flex-wrap gap-4 text-sm">
           <span>Privacy</span>
           <span>Terms</span>
+          <Link
+            to="/content-usage-policy"
+            className="hover:text-white transition-colors"
+          >
+            Content Usage Policy
+          </Link>
           <span>Support</span>
           <span>Contact</span>
         </div>

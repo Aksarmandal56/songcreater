@@ -16,6 +16,7 @@ import SamplesPage from './pages/SamplesPage';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AdminLogin from './pages/AdminLogin';
+import ContentUsagePolicy from './pages/ContentUsagePolicy';
 import PaymentCheckout from './pages/PaymentCheckout';
 
 export default function App() {
@@ -52,6 +53,7 @@ export default function App() {
               }
             />
             <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/content-usage-policy" element={<ContentUsagePolicy />} />
             <Route path="/mobile" element={<MobileScreens />} />
           </Routes>
           <Footer />
