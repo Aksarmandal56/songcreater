@@ -9,14 +9,11 @@ export default function Footer() {
           <p className="text-sm">Turn stories into studio-grade songs with a blend of AI + artists.</p>
         </div>
         <div className="flex flex-wrap gap-4 text-sm">
-          <span>Privacy</span>
-          <span>Terms</span>
-          <Link
-            to="/content-usage-policy"
-            className="hover:text-white transition-colors"
-          >
-            Content Usage Policy
-          </Link>
+          <Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+          <Link to="/terms-and-conditions" className="hover:text-white transition-colors">Terms &amp; Conditions</Link>
+          <Link to="/refund-policy" className="hover:text-white transition-colors">Refund Policy</Link>
+          <Link to="/copyright-policy" className="hover:text-white transition-colors">Copyright Policy</Link>
+          <Link to="/content-usage-policy" className="hover:text-white transition-colors">Content Usage Policy</Link>
           <span>Support</span>
           <span>Contact</span>
         </div>

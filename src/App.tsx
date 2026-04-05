@@ -17,6 +17,10 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AdminLogin from './pages/AdminLogin';
 import ContentUsagePolicy from './pages/ContentUsagePolicy';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import RefundPolicy from './pages/RefundPolicy';
+import TermsAndConditions from './pages/TermsAndConditions';
+import CopyrightPolicy from './pages/CopyrightPolicy';
 import PaymentCheckout from './pages/PaymentCheckout';
 
 export default function App() {
@@ -54,6 +58,10 @@ export default function App() {
             />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/content-usage-policy" element={<ContentUsagePolicy />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/refund-policy" element={<RefundPolicy />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+            <Route path="/copyright-policy" element={<CopyrightPolicy />} />
             <Route path="/mobile" element={<MobileScreens />} />
           </Routes>
           <Footer />
