@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { fetchJson, postJson, putJson, deleteJson, SERVER_BASE_URL } from '../lib/api';
+import { fetchJson, postJson, putJson, deleteJson, postFormData, SERVER_BASE_URL } from '../lib/api';
 import { useAuth } from '../hooks/useAuth';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -458,20 +458,11 @@ export default function AdminDashboard() {
     setBannerUploading(true);
     setBannerMsg('');
     try {
-      const token = localStorage.getItem('authToken');
       const formData = new FormData();
       formData.append('image', bannerFile);
       formData.append('altText', bannerAltText);
       formData.append('sortOrder', bannerSortOrder);
-      const res = await fetch(`${(import.meta.env.VITE_API_URL || 'http://204.168.208.53:5000/api')}/banners`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || 'Upload failed');
-      }
+      await postFormData<Banner>('/banners', formData);
       setBannerFile(null);
       setBannerAltText('');
       setBannerSortOrder('0');
@@ -486,8 +477,13 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteBanner = async (id: string) => {
-    await deleteJson(`/banners/${id}`, {});
-    fetchAll();
+    try {
+      await deleteJson(`/banners/${id}`, {});
+      fetchAll();
+    } catch {
+      setBannerMsg('Failed to delete banner.');
+      setTimeout(() => setBannerMsg(''), 4000);
+    }
   };
 
   // ── Setting ──

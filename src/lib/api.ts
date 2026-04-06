@@ -49,6 +49,22 @@ export async function putJson<T>(path: string, body: unknown): Promise<T> {
   return res.json();
 }
 
+export async function postFormData<T>(path: string, formData: FormData): Promise<T> {
+  const token = getAuthToken();
+  const headers: Record<string, string> = {};
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    method: 'POST',
+    headers,
+    body: formData,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as any).error || 'Network response was not ok');
+  }
+  return res.json();
+}
+
 export async function deleteJson<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${API_BASE_URL}${path}`, {
     method: 'DELETE',

@@ -3,6 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import mongoose from 'mongoose';
 import Banner from '../models/Banner.js';
 import { authenticateToken } from './auth.js';
 
@@ -74,6 +75,9 @@ router.patch('/:id', authenticateToken, async (req, res) => {
     if (req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Admin access required' });
     }
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid banner ID' });
+    }
     const update = { updatedAt: new Date() };
     if (req.body.sortOrder !== undefined) update.sortOrder = Number(req.body.sortOrder);
     if (req.body.altText !== undefined) update.altText = req.body.altText;
@@ -93,11 +97,15 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     if (req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Admin access required' });
     }
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid banner ID' });
+    }
     const banner = await Banner.findByIdAndDelete(req.params.id);
     if (!banner) return res.status(404).json({ error: 'Banner not found' });
 
-    // Remove the file from disk
-    const filePath = path.join(__dirname, '../..', banner.imageUrl);
+    // Remove the file from disk using uploadDir and the base filename only
+    const filename = path.basename(banner.imageUrl);
+    const filePath = path.join(uploadDir, filename);
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }
