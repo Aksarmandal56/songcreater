@@ -25,6 +25,7 @@ import analyticsRoutes from './server/routes/analytics.js';
 import downloadsRoutes from './server/routes/downloads.js';
 import adminRoutes from './server/routes/admin.js';
 import notificationsRoutes from './server/routes/notifications.js';
+import couponRoutes from './server/routes/coupons.js';
 import User from './server/models/User.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -84,6 +85,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/downloads', downloadsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationsRoutes);
+app.use('/api/coupons', couponRoutes);
 // Static uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/uploads/orders', express.static(path.join(__dirname, 'uploads/orders')));

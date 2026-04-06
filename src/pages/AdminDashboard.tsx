@@ -73,6 +73,22 @@ interface StaffMember {
   created_at: string;
 }
 
+interface Coupon {
+  _id: string;
+  code: string;
+  description: string;
+  coupon_type: 'fixed' | 'percentage';
+  discount_value: number;
+  min_order_value: number;
+  max_discount?: number;
+  usage_limit?: number;
+  usage_count: number;
+  start_date?: string;
+  end_date?: string;
+  is_active: boolean;
+  created_at: string;
+}
+
 interface Ticket {
   _id: string;
   ticket_code: string;
@@ -181,6 +197,7 @@ const ALL_TABS = [
   { id: 'analytics', label: 'Analytics', roles: ['admin'] },
   { id: 'affiliates', label: 'Affiliates', roles: ['admin'] },
   { id: 'packages', label: 'Packages', roles: ['admin'] },
+  { id: 'coupons', label: 'Coupons', roles: ['admin'] },
   { id: 'settings', label: 'Settings', roles: ['admin'] },
   { id: 'logs', label: 'System Logs', roles: ['admin'] },
 ];
@@ -202,6 +219,7 @@ export default function AdminDashboard() {
   const [staff, setStaff] = useState<StaffMember[]>([]);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [settings, setSettings] = useState<Setting[]>([]);
   const [logs, setLogs] = useState<Log[]>([]);
   const [loading, setLoading] = useState(true);
@@ -225,6 +243,10 @@ export default function AdminDashboard() {
 
   const [affiliateForm, setAffiliateForm] = useState({ name: '', coupon_code: '', coupon_type: 'percentage', discount_value: '', commission_percent: '', usage_limit: '', start_date: '', end_date: '' });
   const [editingAffiliateId, setEditingAffiliateId] = useState<string | null>(null);
+
+  // Coupon state
+  const [couponForm, setCouponForm] = useState({ code: '', description: '', coupon_type: 'percentage', discount_value: '', min_order_value: '0', max_discount: '', usage_limit: '', start_date: '', end_date: '' });
+  const [editingCouponId, setEditingCouponId] = useState<string | null>(null);
 
   const [settingForm, setSettingForm] = useState({ type: 'music_style', value: '', price: '0', description: '' });
   const [settingTypeFilter, setSettingTypeFilter] = useState('');
@@ -261,6 +283,7 @@ export default function AdminDashboard() {
       if (isAdmin) {
         promises.push(
           fetchJson<Affiliate[]>('/affiliates').then(d => setAffiliates(d || [])),
+        fetchJson<Coupon[]>('/coupons').then(d => setCoupons(d || [])),
           fetchJson<Setting[]>('/settings/all').then(d => setSettings(d || [])),
           fetchJson<Log[]>('/logs').then(d => setLogs(d || [])),
         );
@@ -365,6 +388,23 @@ export default function AdminDashboard() {
     else await postJson('/affiliates', payload);
     setEditingAffiliateId(null);
     setAffiliateForm({ name: '', coupon_code: '', coupon_type: 'percentage', discount_value: '', commission_percent: '', usage_limit: '', start_date: '', end_date: '' });
+    fetchAll();
+  };
+
+  // — Coupon —
+  const handleSaveCoupon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = {
+      ...couponForm,
+      discount_value: Number(couponForm.discount_value),
+      min_order_value: Number(couponForm.min_order_value) || 0,
+      max_discount: couponForm.max_discount ? Number(couponForm.max_discount) : null,
+      usage_limit: couponForm.usage_limit ? Number(couponForm.usage_limit) : null,
+    };
+    if (editingCouponId) await putJson(`/coupons/${editingCouponId}`, payload);
+    else await postJson('/coupons', payload);
+    setEditingCouponId(null);
+    setCouponForm({ code: '', description: '', coupon_type: 'percentage', discount_value: '', min_order_value: '0', max_discount: '', usage_limit: '', start_date: '', end_date: '' });
     fetchAll();
   };
 
@@ -1181,6 +1221,84 @@ export default function AdminDashboard() {
               </div>
             </div>
           )}
+
+        {/* == COUPONS ════════════════════════════════════════ */}
+        {view === 'coupons' && isAdmin && (
+          <div className="space-y-6">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <h3 className="font-semibold mb-4">{editingCouponId ? 'Edit Coupon' : 'Create Coupon'}</h3>
+              <form onSubmit={handleSaveCoupon} className="grid md:grid-cols-3 gap-3">
+                <input required value={couponForm.code} onChange={e => setCouponForm({ ...couponForm, code: e.target.value.toUpperCase() })} placeholder="COUPON CODE" className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white font-mono uppercase" />
+                <input value={couponForm.description} onChange={e => setCouponForm({ ...couponForm, description: e.target.value })} placeholder="Description (optional)" className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white" />
+                <select value={couponForm.coupon_type} onChange={e => setCouponForm({ ...couponForm, coupon_type: e.target.value })} className="rounded-xl border border-white/10 bg-[#1a1a2e] px-4 py-2 text-sm text-white">
+                  <option value="percentage">Percentage (%)</option>
+                  <option value="fixed">Fixed Amount (₹)</option>
+                </select>
+                <input required type="number" value={couponForm.discount_value} onChange={e => setCouponForm({ ...couponForm, discount_value: e.target.value })} placeholder="Discount value" className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white" />
+                <input type="number" value={couponForm.min_order_value} onChange={e => setCouponForm({ ...couponForm, min_order_value: e.target.value })} placeholder="Min order value (₹)" className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white" />
+                <input type="number" value={couponForm.max_discount} onChange={e => setCouponForm({ ...couponForm, max_discount: e.target.value })} placeholder="Max discount (₹, blank = unlimited)" className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white" />
+                <input type="number" value={couponForm.usage_limit} onChange={e => setCouponForm({ ...couponForm, usage_limit: e.target.value })} placeholder="Usage limit (blank = unlimited)" className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white" />
+                <input type="date" value={couponForm.start_date} onChange={e => setCouponForm({ ...couponForm, start_date: e.target.value })} placeholder="Start date" className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white" />
+                <input type="date" value={couponForm.end_date} onChange={e => setCouponForm({ ...couponForm, end_date: e.target.value })} placeholder="End date" className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white" />
+                <div className="md:col-span-3 flex gap-2">
+                  <button className="rounded-full bg-[#6C4DFF] px-6 py-2 text-sm font-semibold">
+                    {editingCouponId ? 'Update' : 'Create'}
+                  </button>
+                  {editingCouponId && (
+                    <button type="button" onClick={() => { setEditingCouponId(null); setCouponForm({ code: '', description: '', coupon_type: 'percentage', discount_value: '', min_order_value: '0', max_discount: '', usage_limit: '', start_date: '', end_date: '' }); }} className="rounded-full border border-white/20 px-4 py-2 text-sm">
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              </form>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="border-b border-white/10">
+                  <tr className="text-white/40 text-xs">
+                    <th className="px-4 py-3 text-left">Code</th>
+                    <th className="px-4 py-3 text-left">Type</th>
+                    <th className="px-4 py-3 text-left">Discount</th>
+                    <th className="px-4 py-3 text-left">Used / Limit</th>
+                    <th className="px-4 py-3 text-left">Validity</th>
+                    <th className="px-4 py-3 text-left">Status</th>
+                    <th className="px-4 py-3 text-left">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {coupons.map(c => (
+                    <tr key={c._id} className="border-t border-white/10 hover:bg-white/5">
+                      <td className="px-4 py-3 font-mono text-xs text-[#A78BFA]">{c.code}</td>
+                      <td className="px-4 py-3">{c.coupon_type}</td>
+                      <td className="px-4 py-3">{c.coupon_type === 'percentage' ? `${c.discount_value}%` : `₹${c.discount_value}`}</td>
+                      <td className="px-4 py-3">{c.usage_count}{c.usage_limit ? `/${c.usage_limit}` : ''}</td>
+                      <td className="px-4 py-3 text-xs text-white/60">{c.start_date ? c.start_date.slice(0,10) : '—'} → {c.end_date ? c.end_date.slice(0,10) : '∞'}</td>
+                      <td className="px-4 py-3">
+                        <span className={`rounded-full px-2 py-0.5 text-xs ${c.is_active ? 'bg-green-400/10 text-green-400' : 'bg-red-400/10 text-red-400'}`}>
+                          {c.is_active ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex gap-2">
+                          <button onClick={() => { setEditingCouponId(c._id); setCouponForm({ code: c.code, description: c.description, coupon_type: c.coupon_type, discount_value: String(c.discount_value), min_order_value: String(c.min_order_value), max_discount: c.max_discount ? String(c.max_discount) : '', usage_limit: c.usage_limit ? String(c.usage_limit) : '', start_date: c.start_date ? c.start_date.slice(0,10) : '', end_date: c.end_date ? c.end_date.slice(0,10) : '' }); }} className="rounded-full border border-white/20 px-3 py-1 text-xs">Edit</button>
+                          <button onClick={async () => { await putJson(`/coupons/${c._id}`, { is_active: !c.is_active }); fetchAll(); }} className="rounded-full border border-white/20 px-3 py-1 text-xs">
+                            {c.is_active ? 'Disable' : 'Enable'}
+                          </button>
+                          <button onClick={async () => { await deleteJson(`/coupons/${c._id}`, {}); fetchAll(); }} className="rounded-full border border-red-400/30 px-3 py-1 text-xs text-red-400">Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {coupons.length === 0 && (
+                    <tr><td colSpan={7} className="py-10 text-center text-white/30">No coupons yet</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
 
           {/* ══ SETTINGS ═══════════════════════════════════════════════════════ */}
           {view === 'settings' && isAdmin && (
