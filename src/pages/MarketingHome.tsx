@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchJson } from '../lib/api';
+import { fetchJson, SERVER_BASE_URL } from '../lib/api';
 import PricingCard from '../components/PricingCard';
 import AudioPlayerCard from '../components/AudioPlayerCard';
 import TestimonialCard from '../components/TestimonialCard';
@@ -44,6 +44,13 @@ interface Step {
   description: string;
 }
 
+interface ApiBanner {
+  _id: string;
+  imageUrl: string;
+  altText: string;
+  sortOrder: number;
+}
+
 export default function MarketingHome() {
   const [packages, setPackages] = useState<Package[]>([
     {
@@ -74,6 +81,7 @@ export default function MarketingHome() {
   const [samples, setSamples] = useState<Sample[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [logos, setLogos] = useState<Logo[]>([]);
+  const [banners, setBanners] = useState<ApiBanner[]>([]);
   const [loading, setLoading] = useState(true);
   const [steps] = useState<Step[]>([
     { id: 1, title: 'Tell Your Story', description: 'Share your message, occasion, and preferences through our simple form.' },
@@ -98,6 +106,10 @@ export default function MarketingHome() {
 
         // Load logos (placeholder for now)
         setLogos([]);
+
+        // Load banners
+        const bannersData = await fetchJson('/banners') as ApiBanner[];
+        setBanners(bannersData);
       } catch (error) {
         console.error('Error loading data:', error);
         // Fallback to hardcoded data if API fails
@@ -178,17 +190,11 @@ export default function MarketingHome() {
       {/* Banner Section */}
       <section className="mx-auto max-w-6xl px-6 py-16">
         <BannerSlider
-          banners={[
-            { id: 1, src: '/1.png', alt: 'Banner 1' },
-            { id: 2, src: '/2.png', alt: 'Banner 2' },
-            { id: 3, src: '/3.png', alt: 'Banner 3' },
-            { id: 4, src: '/4.png', alt: 'Banner 4' },
-            { id: 5, src: '/5.png', alt: 'Banner 5' },
-            { id: 6, src: '/6.png', alt: 'Banner 6' },
-            { id: 7, src: '/7.png', alt: 'Banner 7' },
-            { id: 8, src: '/8.png', alt: 'Banner 8' },
-            { id: 9, src: '/9.png', alt: 'Banner 9' },
-          ]}
+          banners={banners.map(b => ({
+            id: b._id,
+            src: `${SERVER_BASE_URL}${b.imageUrl}`,
+            alt: b.altText || 'Banner',
+          }))}
           autoPlay={true}
           autoPlayInterval={4000}
         />

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Banner {
-  id: number;
+  id: string | number;
   src: string;
   alt: string;
 }
@@ -22,7 +22,13 @@ export default function BannerSlider({
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    if (!autoPlay) return;
+    if (currentIndex >= banners.length && banners.length > 0) {
+      setCurrentIndex(0);
+    }
+  }, [banners.length, currentIndex]);
+
+  useEffect(() => {
+    if (!autoPlay || banners.length === 0) return;
 
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) =>
@@ -47,6 +53,12 @@ export default function BannerSlider({
 
   return (
     <div className="relative w-full max-w-7xl mx-auto">
+      {banners.length === 0 ? (
+        <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 h-64 md:h-80 flex items-center justify-center">
+          <p className="text-white/30 text-sm">No banners uploaded yet</p>
+        </div>
+      ) : (
+      <>
       {/* Main slider container */}
       <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 h-64 md:h-80">
         <AnimatePresence mode="wait">
@@ -98,6 +110,8 @@ export default function BannerSlider({
           />
         ))}
       </div>
+      </>
+      )}
     </div>
   );
 }
