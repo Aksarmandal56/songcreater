@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { fetchJson, postJson, putJson, deleteJson } from '../lib/api';
+import { fetchJson, postJson, putJson, deleteJson, SERVER_BASE_URL } from '../lib/api';
 import { useAuth } from '../hooks/useAuth';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -138,6 +138,14 @@ interface Log {
   created_at: string;
 }
 
+interface Banner {
+  _id: string;
+  imageUrl: string;
+  altText: string;
+  sortOrder: number;
+  createdAt: string;
+}
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const ORDER_STATUSES = ['received', 'processing', 'lyrics_in_progress', 'music_production', 'final_review', 'delivered', 'cancelled'];
@@ -198,6 +206,7 @@ const ALL_TABS = [
   { id: 'affiliates', label: 'Affiliates', roles: ['admin'] },
   { id: 'packages', label: 'Packages', roles: ['admin'] },
   { id: 'coupons', label: 'Coupons', roles: ['admin'] },
+  { id: 'banners', label: 'Banners', roles: ['admin'] },
   { id: 'settings', label: 'Settings', roles: ['admin'] },
   { id: 'logs', label: 'System Logs', roles: ['admin'] },
 ];
@@ -222,6 +231,7 @@ export default function AdminDashboard() {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [settings, setSettings] = useState<Setting[]>([]);
   const [logs, setLogs] = useState<Log[]>([]);
+  const [banners, setBanners] = useState<Banner[]>([]);
   const [loading, setLoading] = useState(true);
 
   // UI state
@@ -256,6 +266,13 @@ export default function AdminDashboard() {
   const [cacheClearing, setCacheClearing] = useState(false);
   const [cacheMsg, setCacheMsg] = useState('');
 
+  // Banner state
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [bannerAltText, setBannerAltText] = useState('');
+  const [bannerSortOrder, setBannerSortOrder] = useState('0');
+  const [bannerUploading, setBannerUploading] = useState(false);
+  const [bannerMsg, setBannerMsg] = useState('');
+
   // ── Fetch ──
 
   const fetchAll = async () => {
@@ -286,6 +303,7 @@ export default function AdminDashboard() {
         fetchJson<Coupon[]>('/coupons').then(d => setCoupons(d || [])),
           fetchJson<Setting[]>('/settings/all').then(d => setSettings(d || [])),
           fetchJson<Log[]>('/logs').then(d => setLogs(d || [])),
+          fetchJson<Banner[]>('/banners').then(d => setBanners(d || [])),
         );
       }
 
@@ -432,6 +450,46 @@ export default function AdminDashboard() {
       setTimeout(() => setCacheMsg(''), 4000);
     }
   };
+  // ── Banner ──
+
+  const handleUploadBanner = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bannerFile) { setBannerMsg('Please select an image file.'); return; }
+    setBannerUploading(true);
+    setBannerMsg('');
+    try {
+      const token = localStorage.getItem('authToken');
+      const formData = new FormData();
+      formData.append('image', bannerFile);
+      formData.append('altText', bannerAltText);
+      formData.append('sortOrder', bannerSortOrder);
+      const res = await fetch(`${(import.meta.env.VITE_API_URL || 'http://204.168.208.53:5000/api')}/banners`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Upload failed');
+      }
+      setBannerFile(null);
+      setBannerAltText('');
+      setBannerSortOrder('0');
+      setBannerMsg('Banner uploaded successfully!');
+      fetchAll();
+    } catch (err: any) {
+      setBannerMsg(err.message || 'Upload failed');
+    } finally {
+      setBannerUploading(false);
+      setTimeout(() => setBannerMsg(''), 4000);
+    }
+  };
+
+  const handleDeleteBanner = async (id: string) => {
+    await deleteJson(`/banners/${id}`, {});
+    fetchAll();
+  };
+
   // ── Setting ──
 
   const handleCreateSetting = async (e: React.FormEvent) => {
@@ -1367,6 +1425,80 @@ export default function AdminDashboard() {
                   </tbody>
                 </table>
               </div>
+            </div>
+          )}
+
+          {/* ══ BANNERS ════════════════════════════════════════════════════ */}
+          {view === 'banners' && isAdmin && (
+            <div className="space-y-6">
+              <h2 className="text-xl font-bold">Landing Page Banners</h2>
+              {/* Upload form */}
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                <h3 className="font-semibold mb-4">Upload New Banner</h3>
+                <form onSubmit={handleUploadBanner} className="grid md:grid-cols-3 gap-3">
+                  <div className="md:col-span-3">
+                    <label className="block text-xs text-white/40 mb-1">Image File (PNG / JPG / WebP, max 5 MB)</label>
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      onChange={e => setBannerFile(e.target.files?.[0] ?? null)}
+                      className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white file:mr-3 file:rounded-full file:border-0 file:bg-[#6C4DFF] file:px-4 file:py-1.5 file:text-xs file:font-semibold file:text-white"
+                    />
+                  </div>
+                  <input
+                    value={bannerAltText}
+                    onChange={e => setBannerAltText(e.target.value)}
+                    placeholder="Alt text (optional)"
+                    className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white"
+                  />
+                  <input
+                    type="number"
+                    value={bannerSortOrder}
+                    onChange={e => setBannerSortOrder(e.target.value)}
+                    placeholder="Sort order (0 = first)"
+                    className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white"
+                  />
+                  <button
+                    type="submit"
+                    disabled={bannerUploading || !bannerFile}
+                    className="rounded-full bg-[#6C4DFF] px-6 py-2 text-sm font-semibold disabled:opacity-50"
+                  >
+                    {bannerUploading ? 'Uploading…' : 'Upload Banner'}
+                  </button>
+                  {bannerMsg && (
+                    <p className={`md:col-span-3 text-sm ${bannerMsg.includes('success') ? 'text-green-400' : 'text-red-400'}`}>
+                      {bannerMsg}
+                    </p>
+                  )}
+                </form>
+              </div>
+              {/* Banner grid */}
+              {banners.length === 0 ? (
+                <p className="text-white/30 text-sm text-center py-10">No banners uploaded yet</p>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {banners.map(b => (
+                    <div key={b._id} className="relative rounded-2xl border border-white/10 bg-white/5 overflow-hidden group">
+                      <img
+                        src={`${SERVER_BASE_URL}${b.imageUrl}`}
+                        alt={b.altText || 'Banner'}
+                        className="w-full h-36 object-cover"
+                      />
+                      <div className="p-2">
+                        <p className="text-xs text-white/40 truncate">{b.altText || '—'}</p>
+                        <p className="text-xs text-white/30">Order: {b.sortOrder}</p>
+                      </div>
+                      <button
+                        onClick={() => handleDeleteBanner(b._id)}
+                        className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity text-xs leading-none"
+                        title="Delete banner"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

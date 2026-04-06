@@ -26,6 +26,7 @@ import downloadsRoutes from './server/routes/downloads.js';
 import adminRoutes from './server/routes/admin.js';
 import notificationsRoutes from './server/routes/notifications.js';
 import couponRoutes from './server/routes/coupons.js';
+import bannerRoutes from './server/routes/banners.js';
 import User from './server/models/User.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -86,9 +87,11 @@ app.use('/api/downloads', downloadsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/coupons', couponRoutes);
+app.use('/api/banners', bannerRoutes);
 // Static uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/uploads/orders', express.static(path.join(__dirname, 'uploads/orders')));
+app.use('/uploads/banners', express.static(path.join(__dirname, 'uploads/banners')));
 
 // Health check
 app.get('/api/health', (req, res) => {
