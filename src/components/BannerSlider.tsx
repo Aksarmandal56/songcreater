@@ -124,8 +124,6 @@ export default function BannerSlider({
           />
         ))}
       </div>
-      </>
-      )}
     </div>
   );
 }

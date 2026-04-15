@@ -7,6 +7,7 @@ const publicLinks = [
   { label: 'Pricing', to: '/#pricing' },
   { label: 'Join Network', to: '/creator-network' },
   { label: 'FAQ', to: '/faq' },
+  { label: 'Contact Us', to: '/contact' },
 ];
 
 const authLinks = [

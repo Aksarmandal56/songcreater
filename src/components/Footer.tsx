@@ -15,7 +15,6 @@ export default function Footer() {
           <Link to="/copyright-policy" className="hover:text-white transition-colors">Copyright Policy</Link>
           <Link to="/content-usage-policy" className="hover:text-white transition-colors">Content Usage Policy</Link>
           <Link to="/faq" className="hover:text-white transition-colors">FAQ</Link>
-          <Link to="/contact" className="hover:text-white transition-colors">Support</Link>
           <Link to="/contact" className="hover:text-white transition-colors">Contact</Link>
         </div>
       </div>
