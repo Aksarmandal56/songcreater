@@ -34,14 +34,15 @@ router.post('/', authenticateToken, [
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { title, genre, duration, audio_url } = req.body;
+    const { title, genre, duration, audio_url, image_url } = req.body;
 
     const sample = new Sample({
       title,
       genre,
       duration,
-      audio_url
-    });
+      audio_url,
+    image_url: image_url || ''
+  });
 
     await sample.save();
     res.status(201).json(sample);
@@ -70,12 +71,13 @@ router.put('/:id', authenticateToken, [
     }
 
     const updateData = {};
-    const { title, genre, duration, audio_url } = req.body;
+    const { title, genre, duration, audio_url, image_url } = req.body;
 
     if (title) updateData.title = title;
     if (genre) updateData.genre = genre;
     if (duration) updateData.duration = duration;
     if (audio_url) updateData.audio_url = audio_url;
+    if (image_url !== undefined) updateData.image_url = image_url;
     updateData.updated_at = new Date();
 
     const sample = await Sample.findByIdAndUpdate(

@@ -8,6 +8,7 @@ interface PricingCardProps {
   buttonLabel: string;
   accent?: boolean;
   linkTo?: string;
+  currency?: 'INR' | 'USD';
 }
 
 export default function PricingCard({
@@ -18,7 +19,13 @@ export default function PricingCard({
   buttonLabel,
   accent,
   linkTo = '/order',
+  currency = 'INR',
 }: PricingCardProps) {
+  const USD_RATE = 83;
+  const displayPrice = currency === 'USD' ? Math.round(price / USD_RATE) : price;
+  const currencySymbol = currency === 'USD' ? '$' : '₹';
+  const locale = currency === 'USD' ? 'en-US' : 'en-IN';
+
   return (
     <div
       className={`flex h-full flex-col rounded-3xl border ${
@@ -30,7 +37,7 @@ export default function PricingCard({
       <h3 className="text-xl font-semibold text-white">{name}</h3>
       <p className="mt-2 text-sm text-white/60">{description}</p>
       <div className="mt-6">
-        <p className="text-3xl font-semibold text-white">₹{price.toLocaleString('en-IN')}</p>
+        <p className="text-3xl font-semibold text-white">{currencySymbol}{displayPrice.toLocaleString(locale)}</p>
         <p className="text-sm text-white/60">Delivery in {deliveryHours} hours</p>
       </div>
       <Link

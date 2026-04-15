@@ -49,10 +49,10 @@ export default function DesignSystem() {
     const fetchData = async () => {
       try {
         const [packagesData, samplesData, testimonialsData, optionsData] = await Promise.all([
-          fetchJson<Package[]>('/api/packages'),
-          fetchJson<Sample[]>('/api/samples'),
-          fetchJson<Testimonial[]>('/api/testimonials'),
-          fetchJson<Option[]>('/api/options'),
+          fetchJson<Package[]>('/packages'),
+          fetchJson<Sample[]>('/samples'),
+          fetchJson<Testimonial[]>('/testimonials'),
+          fetchJson<Option[]>('/options'),
         ]);
         setPackages(packagesData);
         setSamples(samplesData);

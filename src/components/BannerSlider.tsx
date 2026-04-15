@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Volume2, VolumeX } from 'lucide-react';
 
 interface Banner {
   id: number;
@@ -20,18 +20,25 @@ export default function BannerSlider({
   autoPlayInterval = 4000
 }: BannerSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [muted, setMuted] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     if (!autoPlay) return;
-
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) =>
         prevIndex === banners.length - 1 ? 0 : prevIndex + 1
       );
     }, autoPlayInterval);
-
     return () => clearInterval(interval);
   }, [autoPlay, autoPlayInterval, banners.length]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.muted = muted;
+    audio.play().catch(() => {});
+  }, [muted]);
 
   const goToPrevious = () => {
     setCurrentIndex(currentIndex === 0 ? banners.length - 1 : currentIndex - 1);
@@ -46,9 +53,19 @@ export default function BannerSlider({
   };
 
   return (
-    <div className="relative w-full max-w-7xl mx-auto">
+    <div className="relative w-full">
+      {/* Audio element */}
+      <audio
+        ref={audioRef}
+        src="/theme-song.mp3"
+        loop
+        autoPlay
+        muted={muted}
+        style={{ display: 'none' }}
+      />
+
       {/* Main slider container */}
-      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 h-64 md:h-80">
+      <div className="relative overflow-hidden w-full h-[55vh] md:h-[65vh]">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
@@ -80,6 +97,15 @@ export default function BannerSlider({
           aria-label="Next banner"
         >
           <ChevronRight size={20} />
+        </button>
+
+        {/* Mute/Unmute button */}
+        <button
+          onClick={() => setMuted(!muted)}
+          className="absolute bottom-4 right-4 bg-black/60 hover:bg-black/80 text-white p-2 rounded-full transition-colors duration-200 z-10"
+          aria-label={muted ? 'Unmute' : 'Mute'}
+        >
+          {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
         </button>
       </div>
 

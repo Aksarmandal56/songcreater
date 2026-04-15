@@ -5,6 +5,7 @@ const sampleSchema = new mongoose.Schema({
   genre: { type: String, required: true },
   duration: { type: String, required: true },
   audio_url: { type: String, required: true },
+  image_url: { type: String, default: '' },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now }
 });

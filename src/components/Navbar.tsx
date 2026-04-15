@@ -3,9 +3,10 @@ import { useAuth } from '../hooks/useAuth';
 
 const publicLinks = [
   { label: 'Home', to: '/' },
-  { label: 'Create Song', to: '/create-song' },
   { label: 'Samples', to: '/samples' },
   { label: 'Pricing', to: '/#pricing' },
+  { label: 'Join Network', to: '/creator-network' },
+  { label: 'FAQ', to: '/faq' },
 ];
 
 const authLinks = [
@@ -19,7 +20,7 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#0c0c0f]/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-            <img src="/logo.png" alt="Express InMusic" className="h-12 object-contain" />
+            <img src="/logo.png" alt="Express InMusic" className="h-16 object-contain" />
         <div className="hidden items-center gap-4 text-sm text-white/70 lg:flex">
           {publicLinks.map((link) => (
             <NavLink

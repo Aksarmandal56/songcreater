@@ -75,6 +75,7 @@ export default function MarketingHome() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [logos, setLogos] = useState<Logo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currency, setCurrency] = useState<'INR' | 'USD'>('INR');
   const [steps] = useState<Step[]>([
     { id: 1, title: 'Tell Your Story', description: 'Share your message, occasion, and preferences through our simple form.' },
     { id: 2, title: 'AI + Human Creation', description: 'Our songwriters and composers craft your personalized track.' },
@@ -176,7 +177,7 @@ export default function MarketingHome() {
   return (
     <div className="bg-[#0c0c0f] text-white">
       {/* Banner Section */}
-      <section className="mx-auto max-w-6xl px-6 py-16">
+        <section className="w-full">
         <BannerSlider
           banners={[
             { id: 1, src: '/1.png', alt: 'Banner 1' },
@@ -186,15 +187,14 @@ export default function MarketingHome() {
             { id: 5, src: '/5.png', alt: 'Banner 5' },
             { id: 6, src: '/6.png', alt: 'Banner 6' },
             { id: 7, src: '/7.png', alt: 'Banner 7' },
-            { id: 8, src: '/8.png', alt: 'Banner 8' },
-            { id: 9, src: '/9.png', alt: 'Banner 9' },
+              { id: 9, src: '/9.png', alt: 'Banner 9' },
           ]}
           autoPlay={true}
           autoPlayInterval={4000}
         />
       </section>
 
-      <section className="mx-auto flex max-w-6xl flex-col items-center gap-10 px-6 py-16 lg:flex-row">
+      <section className="mx-auto flex max-w-6xl flex-col items-center gap-10 px-6 py-8 lg:flex-row">
         <div className="flex-1">
           <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[#00D4FF]">Music meets storytelling</p>
           <h1 className="mt-4 text-4xl font-semibold md:text-5xl">Turn Your Story Into a Song</h1>
@@ -235,7 +235,7 @@ export default function MarketingHome() {
         </div>
       </section>
 
-      <section id="how-it-works" className="mx-auto max-w-6xl px-6 py-16">
+      <section id="how-it-works" className="mx-auto max-w-6xl px-6 py-8">
         <SectionHeading
           eyebrow="How it works"
           title="From story to finished song"
@@ -251,12 +251,28 @@ export default function MarketingHome() {
         </div>
       </section>
 
-      <section id="pricing" className="mx-auto max-w-6xl px-6 py-16">
+      <section id="pricing" className="mx-auto max-w-6xl px-6 py-8">
         <SectionHeading
           eyebrow="Song categories"
           title="Choose the perfect package"
           subtitle="Personal, business, and campaign tracks crafted by professional musicians."
         />
+        <div className="flex justify-center mb-6">
+          <div className="flex rounded-full border border-white/20 overflow-hidden">
+            <button
+              onClick={() => setCurrency('INR')}
+              className={`px-5 py-2 text-sm font-semibold transition-all ${currency === 'INR' ? 'bg-[#6C4DFF] text-white' : 'bg-transparent text-white/60 hover:text-white'}`}
+            >
+              ₹ INR
+            </button>
+            <button
+              onClick={() => setCurrency('USD')}
+              className={`px-5 py-2 text-sm font-semibold transition-all ${currency === 'USD' ? 'bg-[#6C4DFF] text-white' : 'bg-transparent text-white/60 hover:text-white'}`}
+            >
+              $ USD
+            </button>
+          </div>
+        </div>
         <div className="grid gap-6 md:grid-cols-3">
           {packages.map((item, index) => (
             <PricingCard
@@ -268,12 +284,13 @@ export default function MarketingHome() {
               buttonLabel={`Create ${item.category} Song`}
               accent={index === 1}
               linkTo="/category"
+            currency={currency}
             />
           ))}
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-16">
+      <section className="mx-auto max-w-6xl px-6 py-8">
         <SectionHeading
           eyebrow="Sample songs"
           title="Listen to recent creations"
@@ -292,7 +309,7 @@ export default function MarketingHome() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-16">
+      <section className="mx-auto max-w-6xl px-6 py-8">
         <SectionHeading
           eyebrow="Testimonials"
           title="Stories from our customers"
@@ -311,7 +328,7 @@ export default function MarketingHome() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-16">
+      <section className="mx-auto max-w-6xl px-6 py-8">
         <SectionHeading
           eyebrow="Trusted by"
           title="Schools, companies, and creators"
@@ -330,7 +347,7 @@ export default function MarketingHome() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-20">
+      <section className="mx-auto max-w-6xl px-6 pb-10">
         <div className="rounded-[32px] border border-white/10 bg-gradient-to-r from-[#6C4DFF] via-[#FF3B81] to-[#00D4FF] p-10 text-white">
           <h3 className="text-3xl font-semibold">Your Story Deserves Its Own Song</h3>
           <p className="mt-3 text-white/90">Start your custom song journey today with our dedicated producers.</p>

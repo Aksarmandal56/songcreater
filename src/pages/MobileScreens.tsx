@@ -27,8 +27,8 @@ export default function MobileScreens() {
     const fetchData = async () => {
       try {
         const [packagesData, ordersData] = await Promise.all([
-          fetchJson<Package[]>('/api/packages'),
-          fetchJson<Order[]>('/api/orders'),
+          fetchJson<Package[]>('/packages'),
+          fetchJson<Order[]>('/orders'),
         ]);
         setPackages(packagesData);
         setOrders(ordersData);

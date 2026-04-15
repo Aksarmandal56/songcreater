@@ -21,19 +21,23 @@ interface Option {
 }
 
 interface Coupon {
-  id: number;
-  code: string;
-  affiliate_name: string;
-  discount_percent: number;
+  coupon_code: string;
+  coupon_type: 'fixed' | 'percentage';
+  discount_value: number;
 }
 
 export default function OrderFlow() {
-  const { user } = useAuth();
+  const { user, signUp, signIn } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const packageIndex = searchParams.get('package');
 
   const [packages, setPackages] = useState<Package[]>([]);
+  // Guest registration state
+  const [showGuestForm, setShowGuestForm] = useState(false);
+  const [guestForm, setGuestForm] = useState({ name: '', email: '', password: '' });
+  const [guestLoading, setGuestLoading] = useState(false);
+  const [guestError, setGuestError] = useState('');
 
   useEffect(() => {
     fetchJson<Package[]>('/packages').then(setPackages).catch(console.error);
@@ -63,9 +67,7 @@ export default function OrderFlow() {
     { id: 21, option_type: 'singer_voice', value: 'Duet' },
   ]);
 
-  const [coupons] = useState<Coupon[]>([
-    { id: 1, code: 'SAVE10', affiliate_name: 'Test', discount_percent: 10 },
-  ]);
+  const [couponLoading, setCouponLoading] = useState(false);
 
   const selectedPackage = useMemo(() => {
     if (!packages.length) return null;
@@ -122,32 +124,70 @@ export default function OrderFlow() {
       price += addon.price;
     });
     if (appliedCoupon) {
-      price *= (1 - appliedCoupon.discount_percent / 100);
+      if (appliedCoupon.coupon_type === 'fixed') {
+        price = Math.max(0, price - appliedCoupon.discount_value);
+      } else {
+        price *= (1 - appliedCoupon.discount_value / 100);
+      }
     }
     return Math.max(price, 0);
   }, [selectedPackage, selectedAddons, appliedCoupon]);
 
-  const handleApplyCoupon = () => {
+  const handleApplyCoupon = async () => {
     if (!couponCode.trim()) {
       setCouponError('Enter a coupon code.');
       setAppliedCoupon(null);
       return;
     }
-    const match = coupons.find(
-      (coupon) => coupon.code.toLowerCase() === couponCode.trim().toLowerCase()
-    );
-    if (!match) {
-      setCouponError('Coupon not found.');
+    setCouponLoading(true);
+    setCouponError('');
+    try {
+      const res = await postJson<Coupon>('/affiliates/validate', { coupon_code: couponCode.trim().toUpperCase() });
+      setAppliedCoupon(res);
+      setCouponError('');
+    } catch (err: any) {
+      const msg = err?.message || 'Invalid coupon code.';
+      setCouponError(msg.includes('not ok') ? 'Coupon not found or expired.' : msg);
       setAppliedCoupon(null);
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleGuestRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!guestForm.name.trim() || !guestForm.email.trim() || !guestForm.password.trim()) {
+      setGuestError('All fields are required.');
       return;
     }
-    setAppliedCoupon(match);
-    setCouponError('');
+    if (guestForm.password.length < 6) {
+      setGuestError('Password must be at least 6 characters.');
+      return;
+    }
+    setGuestLoading(true);
+    setGuestError('');
+    try {
+      const result = await signUp(guestForm.email, guestForm.password, guestForm.name);
+      if (result.error) {
+        // Try sign in if already registered
+        const signInResult = await signIn(guestForm.email, guestForm.password);
+        if (signInResult.error) {
+          setGuestError(result.error || 'Registration failed. Please try again.');
+          return;
+        }
+      }
+      setShowGuestForm(false);
+    } catch (err: any) {
+      setGuestError(err?.message || 'Registration failed.');
+    } finally {
+      setGuestLoading(false);
+    }
   };
 
   const handleSubmit = async () => {
     if (!user) {
-      navigate('/login');
+      setShowGuestForm(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
@@ -204,6 +244,62 @@ export default function OrderFlow() {
 
   return (
     <div className="bg-[#0c0c0f] px-6 py-16 text-white">
+      {/* Guest Registration Modal */}
+      {showGuestForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#1a1a2e] p-8">
+            <h2 className="text-2xl font-bold text-white mb-1">Create Your Account</h2>
+            <p className="text-sm text-white/60 mb-6">Register to complete your song order and track its progress.</p>
+            {guestError && (
+              <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-red-400 text-sm">{guestError}</div>
+            )}
+            <form onSubmit={handleGuestRegister} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-white/70 mb-1">Full Name</label>
+                <input
+                  type="text"
+                  value={guestForm.name}
+                  onChange={e => setGuestForm({ ...guestForm, name: e.target.value })}
+                  placeholder="Your full name"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-[#00D4FF]/50 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-white/70 mb-1">Email Address</label>
+                <input
+                  type="email"
+                  value={guestForm.email}
+                  onChange={e => setGuestForm({ ...guestForm, email: e.target.value })}
+                  placeholder="you@example.com"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-[#00D4FF]/50 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-white/70 mb-1">Password</label>
+                <input
+                  type="password"
+                  value={guestForm.password}
+                  onChange={e => setGuestForm({ ...guestForm, password: e.target.value })}
+                  placeholder="Min. 6 characters"
+                  className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-[#00D4FF]/50 focus:outline-none"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={guestLoading}
+                className="w-full rounded-xl bg-gradient-to-r from-[#00D4FF] to-[#8B5CF6] py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+              >
+                {guestLoading ? 'Creating Account...' : 'Create Account & Continue'}
+              </button>
+            </form>
+            <p className="mt-4 text-center text-xs text-white/50">
+              Already have an account?{' '}
+              <button onClick={() => navigate('/login')} className="text-[#00D4FF] hover:underline">Sign in</button>
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-8 lg:grid-cols-2">
           {/* Left: Form */}
@@ -222,7 +318,22 @@ export default function OrderFlow() {
               </div>
             )}
 
-            {/* FORM SECTION 1 – BASIC DETAILS */}
+                    {/* EMAIL DISPLAY SECTION */}
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+          <h2 className="text-lg font-semibold mb-4">Account Email</h2>
+          <div className="flex flex-col gap-1">
+            <label className="text-sm text-white/60">Email Address <span className="text-xs text-white/40">(read-only)</span></label>
+            <div className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/80 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-white/40 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+              <span>{user?.email || '—'}</span>
+            </div>
+            {!user?.email && (
+              <p className="text-xs text-white/40 mt-1">Your email will appear here after you create your account above.</p>
+            )}
+          </div>
+        </div>
+
+        {/* FORM SECTION 1 – BASIC DETAILS */}
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
               <h2 className="text-lg font-semibold mb-4">Basic Details</h2>
               <div className="grid gap-4 md:grid-cols-2">
@@ -320,8 +431,8 @@ export default function OrderFlow() {
                 </div>
                 {appliedCoupon && (
                   <div className="flex justify-between text-[#00D4FF]">
-                    <span>Discount ({appliedCoupon.code})</span>
-                    <span>-₹{((selectedPackage?.price || 0) * (appliedCoupon.discount_percent / 100)).toLocaleString('en-IN')}</span>
+                    <span>Discount ({appliedCoupon.coupon_code})</span>
+                            <span>-₹{(appliedCoupon.coupon_type === 'fixed' ? appliedCoupon.discount_value : Math.round((selectedPackage?.price || 0) * (appliedCoupon.discount_value / 100))).toLocaleString('en-IN')}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-xl font-semibold">

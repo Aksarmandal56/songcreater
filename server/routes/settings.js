@@ -75,4 +75,25 @@ router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
   }
 });
 
+
+// Save SMTP configuration (admin only)
+router.post('/smtp', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { smtp_host, smtp_port, smtp_user, smtp_pass, contact_email } = req.body;
+    const smtpFields = { smtp_host, smtp_port, smtp_user, smtp_pass, contact_email };
+    for (const [key, value] of Object.entries(smtpFields)) {
+      if (value !== undefined) {
+        await Setting.findOneAndUpdate(
+          { type: key },
+          { type: key, value: String(value) },
+          { upsert: true, new: true }
+        );
+      }
+    }
+    res.json({ message: 'SMTP settings saved successfully!' });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 export default router;

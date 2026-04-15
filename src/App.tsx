@@ -11,6 +11,9 @@ import CreateSong from './pages/CreateSong';
 import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import MobileScreens from './pages/MobileScreens';
+import ContactPage from './pages/ContactPage';
+import CreatorNetworkPage from './pages/CreatorNetworkPage';
+import FAQPage from './pages/FAQPage';
 import DesignSystem from './pages/DesignSystem';
 import SamplesPage from './pages/SamplesPage';
 import Login from './pages/Login';
@@ -63,6 +66,9 @@ export default function App() {
             <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
             <Route path="/copyright-policy" element={<CopyrightPolicy />} />
             <Route path="/mobile" element={<MobileScreens />} />
+                <Route path="/contact" element={<ContactPage />} />
+              <Route path="/creator-network" element={<CreatorNetworkPage />} />
+              <Route path="/faq" element={<FAQPage />} />
           </Routes>
           <Footer />
         </div>

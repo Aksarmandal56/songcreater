@@ -1,0 +1,12 @@
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+import dotenv from 'dotenv';
+dotenv.config({ path: '/www/wwwroot/songcreater/.env' });
+await mongoose.connect(process.env.MONGODB_URI);
+const user = await mongoose.connection.db.collection('users').findOne({ email: 'john.doe@example.com' });
+console.log('Hash from DB:', user.password);
+const test1 = await bcrypt.compare('password', user.password);
+const test2 = await bcrypt.compare('password123', user.password);
+console.log('password:', test1);
+console.log('password123:', test2);
+process.exit(0);

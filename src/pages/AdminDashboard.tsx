@@ -73,6 +73,25 @@ interface StaffMember {
   created_at: string;
 }
 
+interface CreatorApplication {
+  _id: string;
+  fullName: string;
+  email: string;
+  country: string;
+  city?: string;
+  phone?: string;
+  role: string;
+  languages: string;
+  genres: string[];
+  portfolio?: string;
+  recordingSetup?: string;
+  experienceLevel: string;
+  availability: string;
+  additionalInfo?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  created_at: string;
+}
+
 interface Coupon {
   _id: string;
   code: string;
@@ -199,6 +218,7 @@ const ALL_TABS = [
   { id: 'packages', label: 'Packages', roles: ['admin'] },
   { id: 'coupons', label: 'Coupons', roles: ['admin'] },
   { id: 'settings', label: 'Settings', roles: ['admin'] },
+  { id: 'creator_network', label: 'Creator Network', roles: ['admin'] },
   { id: 'logs', label: 'System Logs', roles: ['admin'] },
 ];
 
@@ -222,6 +242,7 @@ export default function AdminDashboard() {
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [settings, setSettings] = useState<Setting[]>([]);
   const [logs, setLogs] = useState<Log[]>([]);
+  const [creatorApplications, setCreatorApplications] = useState<CreatorApplication[]>([]);
   const [loading, setLoading] = useState(true);
 
   // UI state
@@ -255,6 +276,11 @@ export default function AdminDashboard() {
   });
   const [cacheClearing, setCacheClearing] = useState(false);
   const [cacheMsg, setCacheMsg] = useState('');
+  // SMTP state
+  interface SmtpForm { smtp_host: string; smtp_port: string; smtp_user: string; smtp_pass: string; contact_email: string; }
+  const [smtpForm, setSmtpForm] = useState<SmtpForm>({ smtp_host: '', smtp_port: '587', smtp_user: '', smtp_pass: '', contact_email: '' });
+  const [smtpSaving, setSmtpSaving] = useState(false);
+  const [smtpMsg, setSmtpMsg] = useState('');
 
   // ── Fetch ──
 
@@ -286,6 +312,7 @@ export default function AdminDashboard() {
         fetchJson<Coupon[]>('/coupons').then(d => setCoupons(d || [])),
           fetchJson<Setting[]>('/settings/all').then(d => setSettings(d || [])),
           fetchJson<Log[]>('/logs').then(d => setLogs(d || [])),
+        fetchJson<CreatorApplication[]>('/creator-network').then(d => setCreatorApplications(d || [])),
         );
       }
 
@@ -455,6 +482,21 @@ export default function AdminDashboard() {
   }
 
   // ─── Layout ───────────────────────────────────────────────────────────────
+
+
+  const handleSaveSmtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSmtpSaving(true);
+    setSmtpMsg('');
+    try {
+      const res = await postJson<{ message: string }>('/settings/smtp', smtpForm);
+      setSmtpMsg(res.message || 'SMTP settings saved!');
+    } catch (err: unknown) {
+      setSmtpMsg('Failed to save SMTP settings');
+    } finally {
+      setSmtpSaving(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#0c0c0f] text-white flex">
@@ -1402,6 +1444,65 @@ export default function AdminDashboard() {
             </div>
           )}
 
+            {/* Creator Network Applications */}
+            {view === 'creator_network' && isAdmin && (
+              <div className="mx-auto max-w-6xl px-4 pb-10">
+                <h2 className="text-xl font-bold text-white mb-4">Creator Network Applications</h2>
+                <div className="rounded-2xl border border-white/10 bg-white/5 overflow-x-auto">
+                  <table className="w-full text-sm text-white">
+                    <thead>
+                      <tr className="border-b border-white/10 text-white/50">
+                        <th className="px-4 py-3 text-left">Name</th>
+                        <th className="px-4 py-3 text-left">Email</th>
+                        <th className="px-4 py-3 text-left">Country</th>
+                        <th className="px-4 py-3 text-left">Role</th>
+                        <th className="px-4 py-3 text-left">Languages</th>
+                        <th className="px-4 py-3 text-left">Experience</th>
+                        <th className="px-4 py-3 text-left">Status</th>
+                        <th className="px-4 py-3 text-left">Date</th>
+                        <th className="px-4 py-3 text-left">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {creatorApplications.map(app => (
+                        <tr key={app._id} className="border-t border-white/10 hover:bg-white/5">
+                          <td className="px-4 py-3 font-medium">{app.fullName}</td>
+                          <td className="px-4 py-3 text-white/70">{app.email}</td>
+                          <td className="px-4 py-3 text-white/70">{app.country}{app.city ? `, ${app.city}` : ''}</td>
+                          <td className="px-4 py-3">{app.role}</td>
+                          <td className="px-4 py-3 text-white/70">{app.languages}</td>
+                          <td className="px-4 py-3">{app.experienceLevel}</td>
+                          <td className="px-4 py-3">
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                              app.status === 'approved' ? 'bg-green-400/20 text-green-400' :
+                              app.status === 'rejected' ? 'bg-red-400/20 text-red-400' :
+                              'bg-yellow-400/20 text-yellow-400'
+                            }`}>{app.status}</span>
+                          </td>
+                          <td className="px-4 py-3 text-white/40 whitespace-nowrap">{new Date(app.created_at).toLocaleDateString('en-IN')}</td>
+                          <td className="px-4 py-3">
+                            <div className="flex gap-2">
+                              <button onClick={async () => {
+                                await putJson(`/creator-network/${app._id}`, { status: 'approved' });
+                                setCreatorApplications(prev => prev.map(a => a._id === app._id ? { ...a, status: 'approved' } : a));
+                              }} className="px-2 py-1 rounded text-xs bg-green-500/20 text-green-400 hover:bg-green-500/40">Approve</button>
+                              <button onClick={async () => {
+                                await putJson(`/creator-network/${app._id}`, { status: 'rejected' });
+                                setCreatorApplications(prev => prev.map(a => a._id === app._id ? { ...a, status: 'rejected' } : a));
+                              }} className="px-2 py-1 rounded text-xs bg-red-500/20 text-red-400 hover:bg-red-500/40">Reject</button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                      {creatorApplications.length === 0 && (
+                        <tr><td colSpan={9} className="py-10 text-center text-white/30">No applications yet</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
             {/* Build Cache Control */}
             {view === 'settings' && isAdmin && (
               <div className="mx-auto max-w-6xl px-6 pb-10">
@@ -1455,6 +1556,42 @@ export default function AdminDashboard() {
                 </div>
               </div>
             )}
+
+        {/* == SMTP Email Configuration == */}
+        {view === 'settings' && isAdmin && (
+          <div className="mx-auto max-w-6xl px-6 pb-10">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <h2 className="text-lg font-bold text-white mb-1">Email / SMTP Configuration</h2>
+              <p className="text-sm text-white/50 mb-4">Configure SMTP settings to send contact form emails.</p>
+              <form onSubmit={handleSaveSmtp} className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-white/50 mb-1">SMTP Host</label>
+                  <input type="text" value={smtpForm.smtp_host} onChange={e => setSmtpForm({...smtpForm, smtp_host: e.target.value})} placeholder="smtp.gmail.com" className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white" />
+                </div>
+                <div>
+                  <label className="block text-xs text-white/50 mb-1">SMTP Port</label>
+                  <input type="text" value={smtpForm.smtp_port} onChange={e => setSmtpForm({...smtpForm, smtp_port: e.target.value})} placeholder="587" className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white" />
+                </div>
+                <div>
+                  <label className="block text-xs text-white/50 mb-1">SMTP Username / Email</label>
+                  <input type="email" value={smtpForm.smtp_user} onChange={e => setSmtpForm({...smtpForm, smtp_user: e.target.value})} placeholder="you@gmail.com" className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white" />
+                </div>
+                <div>
+                  <label className="block text-xs text-white/50 mb-1">SMTP Password / App Password</label>
+                  <input type="password" value={smtpForm.smtp_pass} onChange={e => setSmtpForm({...smtpForm, smtp_pass: e.target.value})} placeholder="App password" className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white" />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-xs text-white/50 mb-1">Contact Recipient Email</label>
+                  <input type="email" value={smtpForm.contact_email} onChange={e => setSmtpForm({...smtpForm, contact_email: e.target.value})} placeholder="admin@yoursite.com" className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white" />
+                </div>
+                <div className="md:col-span-2">
+                  <button type="submit" disabled={smtpSaving} className="rounded-full bg-[#6C4DFF] px-6 py-2 text-sm font-semibold text-white disabled:opacity-50">{smtpSaving ? 'Saving...' : 'Save SMTP Settings'}</button>
+                  {smtpMsg && <p className={`text-xs mt-2 ${smtpMsg.includes('success') ? 'text-green-400' : 'text-red-400'}`}>{smtpMsg}</p>}
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
         </main>
       </div>
     </div>
