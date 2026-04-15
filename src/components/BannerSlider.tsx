@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Volume2, VolumeX } from 'lucide-react';
 
 interface Banner {
-  id: number;
+  id: string | number;
   src: string;
   alt: string;
 }
@@ -124,6 +124,8 @@ export default function BannerSlider({
           />
         ))}
       </div>
+      </>
+      )}
     </div>
   );
 }

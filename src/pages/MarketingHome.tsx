@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { fetchJson } from '../lib/api';
+import { fetchJson, SERVER_BASE_URL } from '../lib/api';
 import PricingCard from '../components/PricingCard';
 import AudioPlayerCard from '../components/AudioPlayerCard';
 import TestimonialCard from '../components/TestimonialCard';
@@ -44,6 +44,13 @@ interface Step {
   description: string;
 }
 
+interface ApiBanner {
+  _id: string;
+  imageUrl: string;
+  altText: string;
+  sortOrder: number;
+}
+
 export default function MarketingHome() {
   const [packages, setPackages] = useState<Package[]>([
     {
@@ -74,6 +81,7 @@ export default function MarketingHome() {
   const [samples, setSamples] = useState<Sample[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [logos, setLogos] = useState<Logo[]>([]);
+  const [banners, setBanners] = useState<ApiBanner[]>([]);
   const [loading, setLoading] = useState(true);
   const [currency, setCurrency] = useState<'INR' | 'USD'>('INR');
   const [steps] = useState<Step[]>([
@@ -99,6 +107,10 @@ export default function MarketingHome() {
 
         // Load logos (placeholder for now)
         setLogos([]);
+
+        // Load banners
+        const bannersData = await fetchJson('/banners') as ApiBanner[];
+        setBanners(bannersData);
       } catch (error) {
         console.error('Error loading data:', error);
         // Fallback to hardcoded data if API fails
