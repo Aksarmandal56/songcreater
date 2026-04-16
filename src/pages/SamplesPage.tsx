@@ -13,19 +13,19 @@ interface SampleCard {
 }
 
 const samples: SampleCard[] = [
-  { id: 1, title: 'Romantic Memory', language: 'Hindi', style: 'Soft Pop', duration: '1:20', category: 'personal', banner: '/1.png' },
-  { id: 2, title: 'Happy Birthday Maa', language: 'Hindi', style: 'Folk', duration: '1:15', category: 'personal', banner: '/2.png' },
-  { id: 3, title: 'Best Friend Forever', language: 'English', style: 'Pop', duration: '1:30', category: 'personal', banner: '/3.png' },
-  { id: 4, title: 'For My Love - A Romantic Dedication', language: 'Hindi', style: 'Soft Pop', duration: '1:30', category: 'personal', banner: '/4.png' },
-  { id: 5, title: 'A Tribute to My Hero', language: 'Bhojpuri', style: 'Folk', duration: '1:25', category: 'personal', banner: '/5.png' },
-  { id: 6, title: 'Grow Fast - Startup Brand Anthem', language: 'English', style: 'Anthem', duration: '1:20', category: 'business', banner: '/6.png' },
-  { id: 7, title: 'Product Launch Jingle', language: 'Hindi', style: 'Pop', duration: '1:10', category: 'business', banner: '/7.png' },
-  { id: 8, title: 'Social Media Reel Song', language: 'English', style: 'Rap', duration: '0:55', category: 'business', banner: '/8.png' },
-  { id: 9, title: 'Brand Identity Anthem', language: 'Hindi', style: 'Anthem', duration: '1:20', category: 'business', banner: '/9.png' },
-  { id: 10, title: 'Voice of Change - Campaign Anthem', language: 'Hindi', style: 'Anthem', duration: '1:45', category: 'campaign', banner: '/1.png' },
-  { id: 11, title: 'NGO Awareness Song', language: 'Hindi', style: 'Folk', duration: '1:30', category: 'campaign', banner: '/2.png' },
-  { id: 12, title: 'Social Movement Anthem', language: 'English', style: 'Anthem', duration: '1:40', category: 'campaign', banner: '/3.png' },
-  { id: 13, title: 'Event Opening Anthem', language: 'English', style: 'Pop', duration: '1:20', category: 'campaign', banner: '/4.png' },
+  { id: 1, title: 'Romantic Memory', language: 'Hindi', style: 'Soft Pop', duration: '1:20', category: 'personal', banner: '/A11.png' },
+  { id: 2, title: 'Happy Birthday Maa', language: 'Hindi', style: 'Folk', duration: '1:15', category: 'personal', banner: '/A12.png' },
+  { id: 3, title: 'Best Friend Forever', language: 'English', style: 'Pop', duration: '1:30', category: 'personal', banner: '/A13.png' },
+  { id: 4, title: 'For My Love - A Romantic Dedication', language: 'Hindi', style: 'Soft Pop', duration: '1:30', category: 'personal', banner: '/A14.png' },
+  { id: 5, title: 'A Tribute to My Hero', language: 'Bhojpuri', style: 'Folk', duration: '1:25', category: 'personal', banner: '/A15.png' },
+  { id: 6, title: 'Grow Fast - Startup Brand Anthem', language: 'English', style: 'Anthem', duration: '1:20', category: 'business', banner: '/A16.png' },
+  { id: 7, title: 'Product Launch Jingle', language: 'Hindi', style: 'Pop', duration: '1:10', category: 'business', banner: '/A11.png' },
+  { id: 8, title: 'Social Media Reel Song', language: 'English', style: 'Rap', duration: '0:55', category: 'business', banner: '/A12.png' },
+  { id: 9, title: 'Brand Identity Anthem', language: 'Hindi', style: 'Anthem', duration: '1:20', category: 'business', banner: '/A13.png' },
+  { id: 10, title: 'Voice of Change - Campaign Anthem', language: 'Hindi', style: 'Anthem', duration: '1:45', category: 'campaign', banner: '/A11.png' },
+  { id: 11, title: 'NGO Awareness Song', language: 'Hindi', style: 'Folk', duration: '1:30', category: 'campaign', banner: '/A12.png' },
+  { id: 12, title: 'Social Movement Anthem', language: 'English', style: 'Anthem', duration: '1:40', category: 'campaign', banner: '/A13.png' },
+  { id: 13, title: 'Event Opening Anthem', language: 'English', style: 'Pop', duration: '1:20', category: 'campaign', banner: '/A14.png' },
 ];
 
 type CategoryKey = 'personal' | 'business' | 'campaign';
