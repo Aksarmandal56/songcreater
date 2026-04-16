@@ -94,6 +94,7 @@ app.use('/api/creator-network', creatorNetworkRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/uploads/orders', express.static(path.join(__dirname, 'uploads/orders')));
 app.use('/uploads/banners', express.static(path.join(__dirname, 'uploads/banners')));
+app.use('/uploads/samples', express.static(path.join(__dirname, 'uploads/samples')));
 
 // Health check
 app.get('/api/health', (req, res) => {

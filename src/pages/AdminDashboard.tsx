@@ -226,6 +226,7 @@ const ALL_TABS = [
   { id: 'packages', label: 'Packages', roles: ['admin'] },
   { id: 'coupons', label: 'Coupons', roles: ['admin'] },
   { id: 'banners', label: 'Banners', roles: ['admin'] },
+  { id: 'samples', label: 'Samples', roles: ['admin'] },
   { id: 'settings', label: 'Settings', roles: ['admin'] },
   { id: 'creator_network', label: 'Creator Network', roles: ['admin'] },
   { id: 'logs', label: 'System Logs', roles: ['admin'] },
@@ -1395,7 +1396,10 @@ export default function AdminDashboard() {
 
 
           {/* ══ SETTINGS ═══════════════════════════════════════════════════════ */}
-          {view === 'settings' && isAdmin && (
+          {view === 'samples' && isAdmin && (
+          <SamplesAdminSection />
+        )}
+        {view === 'settings' && isAdmin && (
             <div className="space-y-6">
               <h2 className="text-xl font-bold">Master Settings</h2>
               <p className="text-sm text-white/50">Manage dropdown options shown during order checkout (music styles, languages, moods, etc.)</p>
@@ -1630,7 +1634,10 @@ export default function AdminDashboard() {
             )}
 
             {/* Build Cache Control */}
-            {view === 'settings' && isAdmin && (
+            {view === 'samples' && isAdmin && (
+          <SamplesAdminSection />
+        )}
+        {view === 'settings' && isAdmin && (
               <div className="mx-auto max-w-6xl px-6 pb-10">
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
                   <div className="flex items-center justify-between mb-4">
@@ -1684,6 +1691,9 @@ export default function AdminDashboard() {
             )}
 
         {/* == SMTP Email Configuration == */}
+        {view === 'samples' && isAdmin && (
+          <SamplesAdminSection />
+        )}
         {view === 'settings' && isAdmin && (
           <div className="mx-auto max-w-6xl px-6 pb-10">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">

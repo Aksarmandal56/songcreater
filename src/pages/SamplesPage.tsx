@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 interface SampleCard {
@@ -10,6 +10,7 @@ interface SampleCard {
   category: 'personal' | 'business' | 'campaign';
   banner: string;
   videoUrl?: string;
+  audioUrl?: string;
 }
 
 const samples: SampleCard[] = [
@@ -78,11 +79,11 @@ function VideoCard({ sample, meta }: { sample: SampleCard; meta: MetaType }) {
           {sample.style}
         </span>
       </div>
-      {sample.videoUrl ? (
+      {(sample.videoUrl || sample.audioUrl) ? (
         <div className="w-full bg-black">
           <video
             ref={videoRef}
-            src={sample.videoUrl}
+            src={sample.videoUrl || sample.audioUrl}
             className="w-full"
             controls
             onEnded={() => setPlaying(false)}
@@ -112,9 +113,24 @@ function VideoCard({ sample, meta }: { sample: SampleCard; meta: MetaType }) {
 export default function SamplesPage() {
   const [activeLang, setActiveLang] = useState('All');
   const [activeStyle, setActiveStyle] = useState('All');
+  const [apiSamples, setApiSamples] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch('/api/samples')
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data) && data.length > 0) setApiSamples(data); })
+      .catch(() => {});
+  }, []);
+
+  // Merge API samples over static ones by matching title
+  const mergedSamples = samples.map(s => {
+    const api = apiSamples.find(a => a.title === s.title);
+    if (api) return { ...s, videoUrl: api.audio_url || undefined, audioUrl: api.audio_url || undefined };
+    return s;
+  });
 
   const filtered = (cat: CategoryKey) =>
-    samples.filter(
+    mergedSamples.filter(
       (s) =>
         s.category === cat &&
         (activeLang === 'All' || s.language === activeLang) &&

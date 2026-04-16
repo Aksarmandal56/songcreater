@@ -14,6 +14,7 @@ import MobileScreens from './pages/MobileScreens';
 import ContactPage from './pages/ContactPage';
 import CreatorNetworkPage from './pages/CreatorNetworkPage';
 import FAQPage from './pages/FAQPage';
+import PricingPage from './pages/PricingPage';
 import DesignSystem from './pages/DesignSystem';
 import SamplesPage from './pages/SamplesPage';
 import Login from './pages/Login';
@@ -39,6 +40,7 @@ export default function App() {
             <Route path="/design-system" element={<DesignSystem />} />
             <Route path="/category" element={<CategoryPage />} />
             <Route path="/samples" element={<SamplesPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
             <Route path="/create-song" element={<CreateSong />} />
             <Route path="/order" element={<OrderFlow />} />
           <Route path="/payment/:orderId" element={<PaymentCheckout />} />

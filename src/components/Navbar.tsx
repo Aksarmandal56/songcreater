@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 const publicLinks = [
   { label: 'Home', to: '/' },
   { label: 'Samples', to: '/samples' },
-  { label: 'Pricing', to: '/#pricing' },
+  { label: 'Pricing', to: '/pricing' },
   { label: 'Join Network', to: '/creator-network' },
   { label: 'FAQ', to: '/faq' },
   { label: 'Contact Us', to: '/contact' },
