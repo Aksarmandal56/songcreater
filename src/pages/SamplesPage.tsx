@@ -13,19 +13,19 @@ interface SampleCard {
 }
 
 const samples: SampleCard[] = [
-  { id: 1, title: "Romantic Memory", language: "Hindi", style: "Soft Pop", duration: "1:20", category: "personal", audioUrl: "/samples/Romantic Memory.mp3" },
-  { id: 2, title: "Happy Birthday Maa", language: "Hindi", style: "Folk", duration: "1:15", category: "personal", audioUrl: "/samples/Happy Birthday Maa.mp3" },
-  { id: 3, title: "Best Friend Forever", language: "English", style: "Pop", duration: "1:30", category: "personal", audioUrl: "/samples/Best Friend Forever.mp3" },
-  { id: 4, title: "For My Love – A Romantic Dedication", language: "Hindi", style: "Soft Pop", duration: "1:30", category: "personal", audioUrl: "/samples/For My Love - A Romantic Dedication.mp3" },
-  { id: 5, title: "A Tribute to My Hero", language: "Bhojpuri", style: "Folk", duration: "1:25", category: "personal", audioUrl: "/samples/A Tribute to My Hero.mp3" },
-  { id: 6, title: "Grow Fast – Startup Brand Anthem", language: "English", style: "Anthem", duration: "1:20", category: "business", audioUrl: "/samples/Grow Fast - Startup Brand Anthem.mp3" },
-  { id: 7, title: "Product Launch Jingle", language: "Hindi", style: "Pop", duration: "1:10", category: "business", audioUrl: "/samples/Product Launch Jingle.mp3" },
-  { id: 8, title: "Social Media Reel Song", language: "English", style: "Rap", duration: "0:55", category: "business", audioUrl: "/samples/Social Media Reel Song.mp3" },
-  { id: 9, title: "Brand Identity Anthem", language: "Hindi", style: "Anthem", duration: "1:20", category: "business", audioUrl: "/samples/Brand Identity Anthem.mp3" },
-  { id: 10, title: "Voice of Change – Campaign Anthem", language: "Hindi", style: "Anthem", duration: "1:45", category: "campaign", audioUrl: "/samples/Voice of Change - Campaign Anthem.mp3" },
-  { id: 11, title: "NGO Awareness Song", language: "Hindi", style: "Folk", duration: "1:30", category: "campaign", audioUrl: "/samples/NGO Awareness Song.mp3" },
-  { id: 12, title: "Social Movement Anthem", language: "English", style: "Anthem", duration: "1:40", category: "campaign", audioUrl: "/samples/Social Movement Anthem.mp3" },
-  { id: 13, title: "Event Opening Anthem", language: "English", style: "Pop", duration: "1:20", category: "campaign", audioUrl: "/samples/Event Opening Anthem.mp3" },
+  { id: 1, title: "Romantic Memory", language: "Hindi", style: "Soft Pop", duration: "1:20", category: "personal" },
+  { id: 2, title: "Happy Birthday Maa", language: "Hindi", style: "Folk", duration: "1:15", category: "personal" },
+  { id: 3, title: "Best Friend Forever", language: "English", style: "Pop", duration: "1:30", category: "personal" },
+  { id: 4, title: "For My Love – A Romantic Dedication", language: "Hindi", style: "Soft Pop", duration: "1:30", category: "personal" },
+  { id: 5, title: "A Tribute to My Hero", language: "Bhojpuri", style: "Folk", duration: "1:25", category: "personal" },
+  { id: 6, title: "Grow Fast – Startup Brand Anthem", language: "English", style: "Anthem", duration: "1:20", category: "business" },
+  { id: 7, title: "Product Launch Jingle", language: "Hindi", style: "Pop", duration: "1:10", category: "business" },
+  { id: 8, title: "Social Media Reel Song", language: "English", style: "Rap", duration: "0:55", category: "business" },
+  { id: 9, title: "Brand Identity Anthem", language: "Hindi", style: "Anthem", duration: "1:20", category: "business" },
+  { id: 10, title: "Voice of Change – Campaign Anthem", language: "Hindi", style: "Anthem", duration: "1:45", category: "campaign" },
+  { id: 11, title: "NGO Awareness Song", language: "Hindi", style: "Folk", duration: "1:30", category: "campaign" },
+  { id: 12, title: "Social Movement Anthem", language: "English", style: "Anthem", duration: "1:40", category: "campaign" },
+  { id: 13, title: "Event Opening Anthem", language: "English", style: "Pop", duration: "1:20", category: "campaign" },
 ];
 
 const languages = ["All", "Hindi", "Bhojpuri", "English", "Spanish", "French", "Arabic"];
