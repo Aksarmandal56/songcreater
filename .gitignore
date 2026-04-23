@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Vite cache
+.vite/
+**/.vite/
+
+# Build output
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Environment
+.env
+.env.local
+
+# User uploads (runtime, not source)
+uploads/
+
+# Local backup files created during patching
+*.bak
+*.bak_*
+
+# One-off diagnostic scripts
+/_*.mjs
+/_*.cjs

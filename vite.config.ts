@@ -1,15 +1,21 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
 export default defineConfig(async () => {
   const plugins = [react()];
   try {
-    // @ts-expect-error Optional plugin import may not exist
-    const m = await import('./.vite-source-tags.js');
+    const m = await import('./vite-source-tags.js');
     plugins.push(m.sourceTags());
-  } catch {
-    // Optional plugin not found, continue without it
-  }
-  return { plugins, base: '/' };
+  } catch {}
+  return {
+    plugins,
+    base: '/',
+    server: {
+      host: '0.0.0.0',
+      port: 5173,
+      strictPort: true,
+      allowedHosts: ['expressinmusic.in','www.expressinmusic.in','expressmusic.in','www.expressmusic.in','localhost','127.0.0.1'],
+      hmr: { host: 'expressinmusic.in', protocol: 'ws', clientPort: 80 }
+    }
+  };
 })

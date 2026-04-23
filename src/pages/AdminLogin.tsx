@@ -116,7 +116,7 @@ export default function AdminLogin() {
             This portal is for admin and operations staff only.
           </p>
           <p className="mt-1 text-xs text-white/30">
-            Customer login → <a href="/login" className="text-[#6C4DFF]/70 hover:text-[#6C4DFF]">songcraft.ai/login</a>
+            Customer login → <a href="/login" className="text-[#6C4DFF]/70 hover:text-[#6C4DFF]">expressinmusic.in/login</a>
           </p>
         </div>
       </div>

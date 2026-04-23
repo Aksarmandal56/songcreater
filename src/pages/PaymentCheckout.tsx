@@ -176,7 +176,7 @@ export default function PaymentCheckout() {
             </div>
             <div className="mt-5 pt-4 border-t border-white/10 flex justify-between items-center">
               <span className="text-white/60 font-medium">Total Amount</span>
-              <span className="text-2xl font-bold text-[#6C4DFF]">₹{order.total_price?.toLocaleString('en-IN')}</span>
+              <span className="text-2xl font-bold text-[#6C4DFF]">₹{(order.total_price||order.package_id?.price||0).toLocaleString('en-IN')}</span>
             </div>
           </div>
         )}
@@ -223,7 +223,7 @@ export default function PaymentCheckout() {
           {paying ? (
             <><Loader className="w-5 h-5 animate-spin" /> Processing...</>
           ) : (
-            <><CreditCard className="w-5 h-5" /> Pay ₹{order?.total_price?.toLocaleString('en-IN')}</>
+            <><CreditCard className="w-5 h-5" /> Pay ₹{(order?.total_price||order?.package_id?.price||0).toLocaleString('en-IN')}</>
           )}
         </button>
 

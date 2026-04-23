@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { fetchJson, postJson, putJson, deleteJson, postFormData, SERVER_BASE_URL } from '../lib/api';
+import { fetchJson, postJson, putJson, deleteJson, postFormData, putFormData, SERVER_BASE_URL } from '../lib/api';
 import { useAuth } from '../hooks/useAuth';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -228,9 +228,383 @@ const ALL_TABS = [
   { id: 'banners', label: 'Banners', roles: ['admin'] },
   { id: 'samples', label: 'Samples', roles: ['admin'] },
   { id: 'settings', label: 'Settings', roles: ['admin'] },
+  { id: 'payments', label: 'Payments', roles: ['admin'] },
   { id: 'creator_network', label: 'Creator Network', roles: ['admin'] },
   { id: 'logs', label: 'System Logs', roles: ['admin'] },
 ];
+
+
+// ── SamplesAdminSection ───────────────────────────────────────────────────────
+function SamplesAdminSection() {
+  const [samples, setSamples] = useState<any[]>([]);
+  const [loadingSamples, setLoadingSamples] = useState(true);
+  const [submittingSample, setSubmittingSample] = useState(false);
+  const [sampleMsg, setSampleMsg] = useState('');
+  const [sampleForm, setSampleForm] = useState({
+    title: '', genre: '', duration: '', language: '', category: 'personal', audio_url: '', image_url: ''
+  });
+  const [sampleAudioFile, setSampleAudioFile] = useState<File | null>(null);
+  const [sampleImageFile, setSampleImageFile] = useState<File | null>(null);
+  const [editingSampleId, setEditingSampleId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState({ title: '', genre: '', duration: '', language: '', category: 'personal', audio_url: '', image_url: '' });
+  const [editAudioFile, setEditAudioFile] = useState<File | null>(null);
+  const [editImageFile, setEditImageFile] = useState<File | null>(null);
+  const [editMsg, setEditMsg] = useState('');
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  const openEditSample = (s: any) => {
+    setEditingSampleId(s._id || s.id);
+    setEditForm({
+      title: s.title || '',
+      genre: s.genre || '',
+      duration: s.duration || '',
+      language: s.language || '',
+      category: s.category || 'personal',
+      audio_url: s.audio_url || '',
+      image_url: s.image_url || '',
+    });
+    setEditAudioFile(null);
+    setEditImageFile(null);
+    setEditMsg('');
+  };
+
+  const closeEditSample = () => {
+    setEditingSampleId(null);
+    setEditMsg('');
+    setEditAudioFile(null);
+    setEditImageFile(null);
+  };
+
+  const handleSaveEditSample = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSampleId) return;
+    setSavingEdit(true); setEditMsg('');
+    try {
+      const fd = new FormData();
+      fd.append('title', editForm.title);
+      fd.append('genre', editForm.genre);
+      fd.append('duration', editForm.duration);
+      fd.append('language', editForm.language);
+      fd.append('category', editForm.category);
+      // Only send audio_url / image_url if no new file is chosen (so backend keeps or replaces them)
+      if (!editAudioFile) fd.append('audio_url', editForm.audio_url);
+      if (!editImageFile) fd.append('image_url', editForm.image_url);
+      if (editAudioFile) fd.append('audio_file', editAudioFile);
+      if (editImageFile) fd.append('image_file', editImageFile);
+      await putFormData(`/samples/${editingSampleId}`, fd);
+      setEditMsg('Saved!');
+      await fetchSamples();
+      setTimeout(() => { closeEditSample(); }, 600);
+    } catch (err: any) {
+      setEditMsg('Error: ' + (err.message || 'Failed to save'));
+    }
+    setSavingEdit(false);
+  };
+
+  const fetchSamples = async () => {
+    try {
+      const data = await fetchJson('/samples');
+      setSamples(Array.isArray(data) ? data : []);
+    } catch { setSamples([]); } finally { setLoadingSamples(false); }
+  };
+
+  useEffect(() => { fetchSamples(); }, []);
+
+  const handleAddSample = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmittingSample(true); setSampleMsg('');
+    try {
+      const fd = new FormData();
+      fd.append('title', sampleForm.title);
+      fd.append('genre', sampleForm.genre);
+      fd.append('duration', sampleForm.duration);
+      fd.append('language', sampleForm.language);
+      fd.append('category', sampleForm.category);
+      fd.append('audio_url', sampleForm.audio_url);
+      fd.append('image_url', sampleForm.image_url);
+      if (sampleAudioFile) fd.append('audio_file', sampleAudioFile);
+      if (sampleImageFile) fd.append('image_file', sampleImageFile);
+      await postFormData('/samples', fd);
+      setSampleMsg('Sample added successfully!');
+      setSampleForm({ title: '', genre: '', duration: '', language: '', category: 'personal', audio_url: '', image_url: '' });
+      setSampleAudioFile(null);
+      setSampleImageFile(null);
+      fetchSamples();
+    } catch (err: any) { setSampleMsg('Error: ' + (err.message || 'Failed to add sample')); }
+    setSubmittingSample(false);
+  };
+
+  const handleDeleteSample = async (id: string) => {
+    if (!confirm('Delete this sample?')) return;
+    try { await deleteJson(`/samples/${id}`, {}); fetchSamples(); }
+    catch (err: any) { alert('Delete failed: ' + err.message); }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-bold">Sample Songs</h2>
+        <p className="text-sm text-white/50 mt-1">Manage audio samples displayed on the public Samples page.</p>
+      </div>
+
+      {/* Add Sample Form */}
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+        <h3 className="font-semibold mb-4">Add New Sample</h3>
+        <form onSubmit={handleAddSample} className="grid md:grid-cols-2 gap-3">
+          <input
+            required value={sampleForm.title}
+            onChange={e => setSampleForm({...sampleForm, title: e.target.value})}
+            placeholder="Title *"
+            className="rounded-xl border border-white/10 bg-[#1a1a2e] px-4 py-2 text-sm text-white col-span-2"
+          />
+          <input
+            required value={sampleForm.genre}
+            onChange={e => setSampleForm({...sampleForm, genre: e.target.value})}
+            placeholder="Genre * (e.g. Pop, Folk, Anthem)"
+            className="rounded-xl border border-white/10 bg-[#1a1a2e] px-4 py-2 text-sm text-white"
+          />
+          <input
+            required value={sampleForm.duration}
+            onChange={e => setSampleForm({...sampleForm, duration: e.target.value})}
+            placeholder="Duration * (e.g. 1:30)"
+            className="rounded-xl border border-white/10 bg-[#1a1a2e] px-4 py-2 text-sm text-white"
+          />
+          <input
+            value={sampleForm.language}
+            onChange={e => setSampleForm({...sampleForm, language: e.target.value})}
+            placeholder="Language (e.g. Hindi, English)"
+            className="rounded-xl border border-white/10 bg-[#1a1a2e] px-4 py-2 text-sm text-white"
+          />
+          <select
+            value={sampleForm.category}
+            onChange={e => setSampleForm({...sampleForm, category: e.target.value})}
+            className="rounded-xl border border-white/10 bg-[#1a1a2e] px-4 py-2 text-sm text-white"
+          >
+            <option value="personal">Personal</option>
+            <option value="business">Business</option>
+            <option value="campaign">Campaign</option>
+          </select>
+          <input
+            value={sampleForm.audio_url}
+            onChange={e => setSampleForm({...sampleForm, audio_url: e.target.value})}
+            placeholder="Audio URL (or upload file below)"
+            className="rounded-xl border border-white/10 bg-[#1a1a2e] px-4 py-2 text-sm text-white"
+          />
+          <div className="col-span-1">
+                  <label className="text-xs text-white/50 mb-1 block">Image / Banner (optional)</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={e => {
+                      const f = e.target.files?.[0] || null;
+                      setSampleImageFile(f);
+                      // Clear any previously entered URL so the uploaded file takes precedence.
+                      if (f) setSampleForm({ ...sampleForm, image_url: '' });
+                    }}
+                    className="text-sm text-white/70"
+                  />
+                  {sampleImageFile ? (
+                    <div className="mt-2">
+                      <img
+                        src={URL.createObjectURL(sampleImageFile)}
+                        alt="preview"
+                        className="h-20 w-20 object-cover rounded-lg border border-white/10"
+                      />
+                      <p className="mt-1 text-xs text-white/40">{sampleImageFile.name}</p>
+                    </div>
+                  ) : sampleForm.image_url ? (
+                    <div className="mt-2">
+                      <img
+                        src={sampleForm.image_url.startsWith('/uploads') ? `${SERVER_BASE_URL}${sampleForm.image_url}` : sampleForm.image_url}
+                        alt="current"
+                        className="h-20 w-20 object-cover rounded-lg border border-white/10"
+                      />
+                    </div>
+                  ) : null}
+                </div>
+          <div className="col-span-2">
+            <label className="text-xs text-white/50 mb-1 block">Upload Audio File (optional – will override Audio URL)</label>
+            <input
+              type="file" accept="audio/*"
+              onChange={e => setSampleAudioFile(e.target.files?.[0] || null)}
+              className="text-sm text-white/70"
+            />
+          </div>
+          <button
+            type="submit" disabled={submittingSample}
+            className="col-span-2 rounded-full bg-[#6C4DFF] py-2 text-sm font-semibold disabled:opacity-50"
+          >
+            {submittingSample ? 'Adding...' : 'Add Sample'}
+          </button>
+          {sampleMsg && (
+            <p className={`col-span-2 text-sm ${sampleMsg.startsWith('Error') ? 'text-red-400' : 'text-green-400'}`}>
+              {sampleMsg}
+            </p>
+          )}
+        </form>
+      </div>
+
+      {/* Samples List */}
+      <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-white/10 text-white/50 text-xs uppercase tracking-wide">
+              <th className="px-4 py-3 text-left">Title</th>
+              <th className="px-4 py-3 text-left">Genre</th>
+              <th className="px-4 py-3 text-left">Duration</th>
+              <th className="px-4 py-3 text-left">Language</th>
+              <th className="px-4 py-3 text-left">Category</th>
+              <th className="px-4 py-3 text-left">Audio</th>
+              <th className="px-4 py-3 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loadingSamples ? (
+              <tr><td colSpan={7} className="py-10 text-center text-white/30">Loading samples...</td></tr>
+            ) : samples.length === 0 ? (
+              <tr><td colSpan={7} className="py-10 text-center text-white/30">No samples yet. Add one above.</td></tr>
+            ) : samples.map(s => (
+              <tr key={s._id || s.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                <td className="px-4 py-3 font-medium">{s.title}</td>
+                <td className="px-4 py-3 text-white/60">{s.genre}</td>
+                <td className="px-4 py-3 text-white/60">{s.duration}</td>
+                <td className="px-4 py-3 text-white/60">{s.language || '—'}</td>
+                <td className="px-4 py-3 text-white/60 capitalize">{s.category || '—'}</td>
+                <td className="px-4 py-3">
+                  {s.audio_url ? (
+                    <a
+                      href={s.audio_url.startsWith('/') ? `${SERVER_BASE_URL}${s.audio_url}` : s.audio_url}
+                      target="_blank" rel="noopener noreferrer"
+                      className="text-[#6C4DFF] text-xs underline hover:text-[#8a6fff]"
+                    >▶ Play</a>
+                  ) : '—'}
+                </td>
+                <td className="px-4 py-3">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => openEditSample(s)}
+                        className="rounded-full border border-[#6C4DFF]/40 px-3 py-1 text-xs text-[#6C4DFF] hover:bg-[#6C4DFF]/10 transition-colors"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteSample(s._id || s.id)}
+                        className="rounded-full border border-red-400/30 px-3 py-1 text-xs text-red-400 hover:bg-red-400/10 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      {editingSampleId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-2xl rounded-2xl border border-white/10 bg-[#1a1a2e] p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Edit Sample</h3>
+              <button onClick={closeEditSample} className="text-white/60 hover:text-white text-xl">&times;</button>
+            </div>
+            <form onSubmit={handleSaveEditSample} className="grid md:grid-cols-2 gap-3">
+              <input
+                required
+                value={editForm.title}
+                onChange={e => setEditForm({ ...editForm, title: e.target.value })}
+                placeholder="Title *"
+                className="rounded-xl border border-white/10 bg-[#1a1a2e] px-4 py-2 text-sm text-white"
+              />
+              <input
+                required
+                value={editForm.genre}
+                onChange={e => setEditForm({ ...editForm, genre: e.target.value })}
+                placeholder="Genre *"
+                className="rounded-xl border border-white/10 bg-[#1a1a2e] px-4 py-2 text-sm text-white"
+              />
+              <input
+                required
+                value={editForm.duration}
+                onChange={e => setEditForm({ ...editForm, duration: e.target.value })}
+                placeholder="Duration * (e.g. 1:30)"
+                className="rounded-xl border border-white/10 bg-[#1a1a2e] px-4 py-2 text-sm text-white"
+              />
+              <input
+                value={editForm.language}
+                onChange={e => setEditForm({ ...editForm, language: e.target.value })}
+                placeholder="Language"
+                className="rounded-xl border border-white/10 bg-[#1a1a2e] px-4 py-2 text-sm text-white"
+              />
+              <select
+                value={editForm.category}
+                onChange={e => setEditForm({ ...editForm, category: e.target.value })}
+                className="rounded-xl border border-white/10 bg-[#1a1a2e] px-4 py-2 text-sm text-white"
+              >
+                <option value="personal">Personal</option>
+                <option value="business">Business</option>
+                <option value="campaign">Campaign</option>
+              </select>
+              <input
+                value={editForm.audio_url}
+                onChange={e => setEditForm({ ...editForm, audio_url: e.target.value })}
+                placeholder="Audio URL (or upload below to replace)"
+                className="rounded-xl border border-white/10 bg-[#1a1a2e] px-4 py-2 text-sm text-white"
+              />
+              <div className="md:col-span-2 grid md:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-white/50 mb-1 block">Replace Audio (optional)</label>
+                  <input
+                    type="file"
+                    accept="audio/*"
+                    onChange={e => setEditAudioFile(e.target.files?.[0] || null)}
+                    className="text-sm text-white/70"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-white/50 mb-1 block">Replace Image (optional)</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={e => setEditImageFile(e.target.files?.[0] || null)}
+                    className="text-sm text-white/70"
+                  />
+                  {editForm.image_url && !editImageFile && (
+                    <img
+                      src={editForm.image_url.startsWith('/') ? `${SERVER_BASE_URL}${editForm.image_url}` : editForm.image_url}
+                      alt=""
+                      className="mt-1 h-12 w-20 object-cover rounded border border-white/10"
+                      onError={(ev) => { (ev.target as HTMLImageElement).style.display = 'none'; }}
+                    />
+                  )}
+                </div>
+              </div>
+              <div className="md:col-span-2 flex items-center justify-end gap-3 pt-2">
+                {editMsg && (
+                  <p className={`text-sm ${editMsg.startsWith('Error') ? 'text-red-400' : 'text-green-400'}`}>{editMsg}</p>
+                )}
+                <button
+                  type="button"
+                  onClick={closeEditSample}
+                  className="rounded-full border border-white/20 px-4 py-2 text-sm text-white/70 hover:bg-white/5"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingEdit}
+                  className="rounded-full bg-[#6C4DFF] px-4 py-2 text-sm text-white hover:bg-[#5a3fd8] disabled:opacity-50"
+                >
+                  {savingEdit ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      </div>
+    </div>
+  );
+}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -253,6 +627,10 @@ export default function AdminDashboard() {
   const [settings, setSettings] = useState<Setting[]>([]);
   const [logs, setLogs] = useState<Log[]>([]);
   const [creatorApplications, setCreatorApplications] = useState<CreatorApplication[]>([]);
+  const [gateways, setGateways] = useState<any[]>([]);
+  const [gatewayForm, setGatewayForm] = useState<{ key_id: string; key_secret: string; webhook_secret: string; is_test_mode: boolean; is_active: boolean; display_name: string }>({ key_id: '', key_secret: '', webhook_secret: '', is_test_mode: true, is_active: true, display_name: 'Razorpay' });
+  const [gatewayMsg, setGatewayMsg] = useState('');
+  const [gatewaySaving, setGatewaySaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // UI state
@@ -329,6 +707,7 @@ export default function AdminDashboard() {
         fetchJson<Coupon[]>('/coupons').then(d => setCoupons(d || [])),
           fetchJson<Setting[]>('/settings/all').then(d => setSettings(d || [])),
           fetchJson<Log[]>('/logs').then(d => setLogs(d || [])),
+        fetchJson<any[]>('/payments/admin/gateways').then(d => setGateways(d || [])).catch(() => {}),
         fetchJson<CreatorApplication[]>('/creator-network').then(d => setCreatorApplications(d || [])),
         );
       }
@@ -1543,6 +1922,98 @@ export default function AdminDashboard() {
           )}
 
           {/* ══ SYSTEM LOGS ════════════════════════════════════════════════════ */}
+          {view === 'payments' && isAdmin && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-semibold text-white">Payment Gateways</h2>
+                <button onClick={async () => { try { const d = await fetchJson<any[]>('/payments/admin/gateways'); setGateways(d || []); } catch {} }} className="rounded-full border border-white/20 px-3 py-1 text-xs hover:bg-white/10">Refresh</button>
+              </div>
+
+              {(() => {
+                const rz = (gateways || []).find((g: any) => (g.name || '').toLowerCase() === 'razorpay');
+                return (
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-lg font-semibold text-white">Razorpay</div>
+                        <div className="text-xs text-white/50">{rz ? (rz.is_test_mode ? 'Test mode' : 'Live mode') : 'Not configured yet'}</div>
+                      </div>
+                      {rz && (
+                        <span className={`rounded-full px-2 py-0.5 text-xs ${rz.is_active ? 'bg-green-400/10 text-green-400' : 'bg-red-400/10 text-red-400'}`}>{rz.is_active ? 'Active' : 'Inactive'}</span>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs text-white/60 mb-1">Display Name</label>
+                        <input value={gatewayForm.display_name} onChange={e => setGatewayForm({ ...gatewayForm, display_name: e.target.value })} className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:border-[#6C4DFF]" />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-white/60 mb-1">Key ID</label>
+                        <input value={gatewayForm.key_id} onChange={e => setGatewayForm({ ...gatewayForm, key_id: e.target.value })} placeholder={rz?.key_id_masked || 'rzp_test_XXXXXXXXXXXX'} autoComplete="off" name="rzp-key-id-no-autofill" spellCheck={false} className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:border-[#6C4DFF]" />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-white/60 mb-1">Key Secret</label>
+                        <input type="password" value={gatewayForm.key_secret} onChange={e => setGatewayForm({ ...gatewayForm, key_secret: e.target.value })} placeholder={rz ? '•••••••••• (leave blank to keep current)' : 'Enter key secret'} autoComplete="new-password" name="rzp-key-secret-no-autofill" spellCheck={false} className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:border-[#6C4DFF]" />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-white/60 mb-1">Webhook Secret (optional)</label>
+                        <input type="password" value={gatewayForm.webhook_secret} onChange={e => setGatewayForm({ ...gatewayForm, webhook_secret: e.target.value })} placeholder={rz ? '•••••••••• (leave blank to keep current)' : 'Webhook secret for /api/payments/webhook'} autoComplete="new-password" name="rzp-webhook-secret-no-autofill" spellCheck={false} className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:border-[#6C4DFF]" />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-6 pt-2">
+                      <label className="flex items-center gap-2 text-sm text-white/80">
+                        <input type="checkbox" checked={gatewayForm.is_test_mode} onChange={e => setGatewayForm({ ...gatewayForm, is_test_mode: e.target.checked })} /> Test mode
+                      </label>
+                      <label className="flex items-center gap-2 text-sm text-white/80">
+                        <input type="checkbox" checked={gatewayForm.is_active} onChange={e => setGatewayForm({ ...gatewayForm, is_active: e.target.checked })} /> Active
+                      </label>
+                    </div>
+
+                    <div className="flex items-center gap-3 pt-2">
+                      <button
+                        disabled={gatewaySaving}
+                        onClick={async () => {
+                          setGatewaySaving(true); setGatewayMsg('');
+                          try {
+                            if (rz && rz._id) {
+                              const payload: any = { is_test_mode: gatewayForm.is_test_mode, is_active: gatewayForm.is_active, display_name: gatewayForm.display_name };
+                              if (gatewayForm.key_id) payload.key_id = gatewayForm.key_id;
+                              if (gatewayForm.key_secret) payload.key_secret = gatewayForm.key_secret;
+                              if (gatewayForm.webhook_secret) payload.webhook_secret = gatewayForm.webhook_secret;
+                              await putJson(`/payments/admin/gateways/${rz._id}`, payload);
+                            } else {
+                              if (!gatewayForm.key_id || !gatewayForm.key_secret) { setGatewayMsg('Key ID and Key Secret are required to create the gateway.'); setGatewaySaving(false); return; }
+                              await postJson('/payments/admin/gateways', { name: 'razorpay', display_name: gatewayForm.display_name || 'Razorpay', key_id: gatewayForm.key_id, key_secret: gatewayForm.key_secret, webhook_secret: gatewayForm.webhook_secret });
+                            }
+                            const d = await fetchJson<any[]>('/payments/admin/gateways');
+                            setGateways(d || []);
+                            setGatewayForm({ ...gatewayForm, key_secret: '', webhook_secret: '' });
+                            setGatewayMsg('Saved successfully.');
+                          } catch (err: any) {
+                            setGatewayMsg(err?.message || 'Failed to save');
+                          } finally {
+                            setGatewaySaving(false);
+                          }
+                        }}
+                        className="rounded-full bg-[#6C4DFF] px-5 py-2 text-sm font-medium text-white hover:bg-[#5a3de0] disabled:opacity-50"
+                      >
+                        {gatewaySaving ? 'Saving…' : (rz ? 'Update Razorpay Keys' : 'Save Razorpay Keys')}
+                      </button>
+                      {gatewayMsg && <span className="text-xs text-white/70">{gatewayMsg}</span>}
+                    </div>
+
+                    <div className="text-xs text-white/50 pt-4 border-t border-white/10">
+                      <div>Get your keys from <span className="text-white/80">Razorpay Dashboard → Settings → API Keys</span>.</div>
+                      <div>Webhook URL: <code className="text-white/70">/api/payments/webhook</code></div>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+
           {view === 'logs' && isAdmin && (
             <div className="space-y-4">
               <h2 className="text-xl font-bold">System Logs</h2>
@@ -1634,9 +2105,6 @@ export default function AdminDashboard() {
             )}
 
             {/* Build Cache Control */}
-            {view === 'samples' && isAdmin && (
-          <SamplesAdminSection />
-        )}
         {view === 'settings' && isAdmin && (
               <div className="mx-auto max-w-6xl px-6 pb-10">
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
@@ -1691,9 +2159,6 @@ export default function AdminDashboard() {
             )}
 
         {/* == SMTP Email Configuration == */}
-        {view === 'samples' && isAdmin && (
-          <SamplesAdminSection />
-        )}
         {view === 'settings' && isAdmin && (
           <div className="mx-auto max-w-6xl px-6 pb-10">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">

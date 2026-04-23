@@ -58,9 +58,6 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           {user ? (
             <div className="flex items-center gap-3">
-              <span className="text-sm text-white/70">
-                Welcome, {user.email?.split('@')[0]}
-              </span>
               <button
                 onClick={signOut}
                 className="rounded-full border border-white/20 px-4 py-2 text-sm text-white/70 hover:bg-white/10"

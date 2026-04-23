@@ -188,6 +188,19 @@ router.post('/apply-coupon', authenticateToken, async (req, res) => {
 
 // ── Checkout — lock order, apply coupon, ready for payment ───────────────────
 
+// -- GET /:id (owner or staff) added by fix --
+router.get('/:id', authenticateToken, async (req, res) => {
+  try {
+    if (!/^[a-fA-F0-9]{24}$/.test(req.params.id)) return res.status(404).json({ error: 'Order not found' });
+    const order = await Order.findById(req.params.id).populate('package_id', 'name price delivery_hours');
+    if (!order) return res.status(404).json({ error: 'Order not found' });
+    const staffRoles = ['admin','operator','lyrics_team','production_team','qa_team'];
+    const isStaff = req.user && staffRoles.includes(req.user.role);
+    if (!isStaff && order.customer_email !== req.user.email) return res.status(403).json({ error: 'Forbidden' });
+    return res.json(order);
+  } catch (error) { console.error('Get order by id error:', error); return res.status(500).json({ error: 'Server error' }); }
+});
+
 router.post('/checkout', authenticateToken, async (req, res) => {
   try {
     const { order_id, coupon_code, payment_gateway = 'razorpay' } = req.body;

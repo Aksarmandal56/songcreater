@@ -29,11 +29,11 @@ const upload = multer({
   storage,
   limits: { fileSize: 100 * 1024 * 1024 }, // 100MB
   fileFilter: (req, file, cb) => {
-    const allowed = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'video/mp4', 'video/webm', 'audio/mp4'];
-    if (allowed.includes(file.mimetype) || file.originalname.match(/\.(mp3|mp4|wav|ogg|webm|m4a)$/i)) {
+    const allowed = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/ogg', 'video/mp4', 'video/webm', 'audio/mp4', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+    if (allowed.includes(file.mimetype) || file.originalname.match(/\.(mp3|mp4|wav|ogg|webm|m4a|jpg|jpeg|png|webp|gif)$/i)) {
       cb(null, true);
     } else {
-      cb(new Error('Only audio and video files are allowed'));
+      cb(new Error('Only audio, video, or image files are allowed'));
     }
   },
 });
@@ -50,7 +50,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST /api/samples - admin only (with optional file upload)
-router.post('/', authenticateToken, upload.single('audio_file'), [
+router.post('/', authenticateToken, upload.fields([{ name: 'audio_file', maxCount: 1 }, { name: 'image_file', maxCount: 1 }]), [
   body('title').trim().isLength({ min: 1 }),
   body('genre').trim().isLength({ min: 1 }),
   body('duration').trim().isLength({ min: 1 }),
@@ -67,10 +67,16 @@ router.post('/', authenticateToken, upload.single('audio_file'), [
 
     const { title, genre, duration, audio_url, image_url, language, category } = req.body;
 
-    // If file uploaded, use local URL; otherwise use provided audio_url
+    // If files uploaded, use their local URLs; otherwise use provided URL values.
     let finalAudioUrl = audio_url || '';
-    if (req.file) {
-      finalAudioUrl = `/uploads/samples/${req.file.filename}`;
+    let finalImageUrl = image_url || '';
+    const audioFile = req.files && req.files['audio_file'] && req.files['audio_file'][0];
+    const imageFile = req.files && req.files['image_file'] && req.files['image_file'][0];
+    if (audioFile) {
+      finalAudioUrl = `/uploads/samples/${audioFile.filename}`;
+    }
+    if (imageFile) {
+      finalImageUrl = `/uploads/samples/${imageFile.filename}`;
     }
 
     const sample = new Sample({
@@ -78,7 +84,7 @@ router.post('/', authenticateToken, upload.single('audio_file'), [
       genre,
       duration,
       audio_url: finalAudioUrl,
-      image_url: image_url || '',
+      image_url: finalImageUrl,
       language: language || '',
       category: category || 'personal',
     });
@@ -92,7 +98,7 @@ router.post('/', authenticateToken, upload.single('audio_file'), [
 });
 
 // PUT /api/samples/:id - admin only (with optional file upload)
-router.put('/:id', authenticateToken, upload.single('audio_file'), [
+router.put('/:id', authenticateToken, upload.fields([{ name: 'audio_file', maxCount: 1 }, { name: 'image_file', maxCount: 1 }]), [
   body('title').optional().trim().isLength({ min: 1 }),
   body('genre').optional().trim().isLength({ min: 1 }),
   body('duration').optional().trim().isLength({ min: 1 }),
@@ -117,7 +123,10 @@ router.put('/:id', authenticateToken, upload.single('audio_file'), [
     if (category !== undefined) updateData.category = category;
     if (audio_url) updateData.audio_url = audio_url;
     if (image_url !== undefined) updateData.image_url = image_url;
-    if (req.file) updateData.audio_url = `/uploads/samples/${req.file.filename}`;
+    const audioFile2 = req.files && req.files['audio_file'] && req.files['audio_file'][0];
+    const imageFile2 = req.files && req.files['image_file'] && req.files['image_file'][0];
+    if (audioFile2) updateData.audio_url = `/uploads/samples/${audioFile2.filename}`;
+    if (imageFile2) updateData.image_url = `/uploads/samples/${imageFile2.filename}`;
     updateData.updated_at = new Date();
 
     const sample = await Sample.findByIdAndUpdate(req.params.id, updateData, { new: true });

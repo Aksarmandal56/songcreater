@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { fetchJson, SERVER_BASE_URL } from '../lib/api';
 import PricingCard from '../components/PricingCard';
 import AudioPlayerCard from '../components/AudioPlayerCard';
+import SampleCard from '../components/SampleCard';
 import TestimonialCard from '../components/TestimonialCard';
 import SectionHeading from '../components/SectionHeading';
 import BannerSlider from '../components/BannerSlider';
@@ -92,60 +93,46 @@ export default function MarketingHome() {
 
   useEffect(() => {
     const loadData = async () => {
+      // Load each resource independently so one failure doesn't wipe others.
       try {
-        // Load packages
         const packagesData = await fetchJson('/packages') as Package[];
         setPackages(packagesData);
+      } catch (e) {
+        console.error('Error loading packages:', e);
+        setPackages([
+          { _id: '1', name: 'Personal Song', price: 3999, delivery_hours: 24, description: 'Perfect for birthdays, love songs, friendship, and motivation.', category: 'Personal' },
+          { _id: '2', name: 'Small Business Song', price: 9100, delivery_hours: 72, description: 'Brand anthems, product songs, and promotional tracks.', category: 'Business' },
+          { _id: '3', name: 'Institution Song', price: 21000, delivery_hours: 160, description: 'School anthems, college songs, political campaigns, and NGO tracks.', category: 'Institution' },
+        ] as any);
+      }
 
-        // Load samples
+      try {
         const samplesData = await fetchJson('/samples') as Sample[];
         setSamples(samplesData);
+      } catch (e) {
+        console.error('Error loading samples:', e);
+        setSamples([]);
+      }
 
-        // Load testimonials
+      try {
         const testimonialsData = await fetchJson('/testimonials') as Testimonial[];
         setTestimonials(testimonialsData);
+      } catch (e) {
+        console.error('Error loading testimonials:', e);
+        setTestimonials([]);
+      }
 
-        // Load logos (placeholder for now)
-        setLogos([]);
+      setLogos([]);
 
-        // Load banners
+      try {
         const bannersData = await fetchJson('/banners') as ApiBanner[];
         setBanners(bannersData);
-      } catch (error) {
-        console.error('Error loading data:', error);
-        // Fallback to hardcoded data if API fails
-        setPackages([
-          {
-            _id: '1',
-            name: 'Personal Song',
-            price: 3999,
-            delivery_hours: 24,
-            description: 'Perfect for birthdays, love songs, friendship, and motivation.',
-            category: 'Personal'
-          },
-          {
-            _id: '2',
-            name: 'Small Business Song',
-            price: 9100,
-            delivery_hours: 72,
-            description: 'Brand anthems, product songs, and promotional tracks.',
-            category: 'Business'
-          },
-          {
-            _id: '3',
-            name: 'Institution Song',
-            price: 21000,
-            delivery_hours: 160,
-            description: 'School anthems, college songs, political campaigns, and NGO tracks.',
-            category: 'Institution'
-          }
-        ]);
-        setSamples([]);
-        setTestimonials([]);
-        setLogos([]);
-      } finally {
-        setLoading(false);
+      } catch (e) {
+        console.error('Error loading banners:', e);
+        setBanners([]);
       }
+
+      setLoading(false);
     };
 
     loadData();
@@ -155,18 +142,7 @@ export default function MarketingHome() {
     return <div className="px-6 py-20 text-center text-white">Loading marketing content...</div>;
   }
 
-  const sampleData = samples.length > 0 ? samples : [
-    { _id: '1', title: 'Birthday Surprise Song', genre: 'Pop', duration: '3:05', audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
-    { _id: '2', title: 'Brand Anthem Track', genre: 'Corporate', duration: '3:40', audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
-    { _id: '3', title: 'Love Dedication Ballad', genre: 'Romantic', duration: '3:20', audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
-    { _id: '4', title: 'Motivational Startup Jingle', genre: 'Corporate', duration: '2:58', audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
-    { _id: '5', title: 'College Anthem', genre: 'Institutional', duration: '3:15', audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3' },
-    { _id: '6', title: 'Festival Celebration Song', genre: 'Pop', duration: '3:10', audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3' },
-    { _id: '7', title: 'Product Launch Theme', genre: 'Corporate', duration: '3:00', audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3' },
-    { _id: '8', title: 'NGO Awareness Track', genre: 'Institutional', duration: '3:25', audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' },
-    { _id: '9', title: 'Friendship Tribute Song', genre: 'Pop', duration: '3:02', audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3' },
-    { _id: '10', title: 'Campaign Success Anthem', genre: 'Institutional', duration: '3:30', audio_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3' },
-  ];
+  const sampleData = samples.slice(0, 6);
 
   const testimonialData = testimonials.length > 0 ? testimonials : [
     { _id: '1', name: 'Aarav S.', quote: 'The birthday track was magical—studio quality and fast delivery.', rating: 5, photo_url: 'https://ui-avatars.com/api/?name=Aarav+S&background=6C4DFF&color=fff&size=96' },
@@ -308,17 +284,18 @@ export default function MarketingHome() {
           title="Listen to recent creations"
           subtitle="Audio previews across genres and storytelling styles."
         />
-        <div className="grid gap-6 md:grid-cols-2">
+        {sampleData.length === 0 ? (
+            <div className="text-center py-12 text-white/50">
+              <p className="text-lg mb-2">No samples available yet.</p>
+              <p className="text-sm">Check back soon — our team is uploading new samples!</p>
+            </div>
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {sampleData.map((sample) => (
-            <AudioPlayerCard
-              key={sample._id}
-              title={sample.title}
-              genre={sample.genre}
-              duration={sample.duration}
-              audioUrl={sample.audio_url}
-            />
-          ))}
+              <SampleCard key={sample._id} sample={sample as any} />
+            ))}
         </div>
+          )}
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-8">

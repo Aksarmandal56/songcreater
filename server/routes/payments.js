@@ -52,6 +52,10 @@ router.post('/create', authenticateToken, [
 
     const amount = order.total_price || order.package_id?.price || 0;
     const rzp = await getRazorpay();
+    // -- rzp guard fix --
+    if (!rzp) return res.status(400).json({ error: 'Payment gateway not configured. Admin must set Razorpay Key ID and Key Secret in Payments settings.' });
+    // -- gw key_id scope fix --
+    const gw = await PaymentGateway.findOne({ name: 'razorpay', is_active: true }) || { key_id: '' };
 
     let gateway_order_id = null;
     if (rzp) {

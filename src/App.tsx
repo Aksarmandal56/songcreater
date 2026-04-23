@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute, AdminRoute } from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
@@ -41,7 +41,7 @@ export default function App() {
             <Route path="/category" element={<CategoryPage />} />
             <Route path="/samples" element={<SamplesPage />} />
             <Route path="/pricing" element={<PricingPage />} />
-            <Route path="/create-song" element={<CreateSong />} />
+            <Route path="/create-song" element={<Navigate to="/order?package=1" replace />} />
             <Route path="/order" element={<OrderFlow />} />
           <Route path="/payment/:orderId" element={<PaymentCheckout />} />
             <Route path="/premium" element={<PremiumLanding />} />
