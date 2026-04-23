@@ -41,7 +41,7 @@ export function AdminRoute({ children }: ProtectedRouteProps) {
   }
 
   if (!user || !['admin', 'operator', 'lyrics_team', 'music_production', 'qa_team', 'support'].includes(user.role)) {
-    return <Navigate to="/admin/login" replace />;
+    return <Navigate to="/expressadmin/login" replace />;
   }
 
   return <>{children}</>;

@@ -31,7 +31,7 @@ export default function AdminLogin() {
       localStorage.setItem('user', JSON.stringify(response.user));
 
       // Force page reload so AuthContext picks up the new token
-      window.location.href = '/admin';
+      window.location.href = '/expressadmin';
     } catch (err: any) {
       setError('Invalid email or password.');
       setLoading(false);

@@ -12,7 +12,7 @@ const publicLinks = [
 
 const authLinks = [
   { label: 'Dashboard', to: '/dashboard' },
-  { label: 'Admin', to: '/admin' },
+  { label: 'Admin', to: '/expressadmin' },
 ];
 
 export default function Navbar() {
@@ -46,7 +46,7 @@ export default function Navbar() {
           )}
           {user && ['admin', 'operator'].includes(user.role) && (
             <NavLink
-              to="/admin"
+              to="/expressadmin"
               className={({ isActive }) =>
                 `rounded-full px-3 py-1 transition ${isActive ? 'bg-white/10 text-white' : 'hover:text-white'}`
               }

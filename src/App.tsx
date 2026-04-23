@@ -54,14 +54,14 @@ export default function App() {
               }
             />
             <Route
-              path="/admin"
+              path="/expressadmin"
               element={
                 <AdminRoute>
                   <AdminDashboard />
                 </AdminRoute>
               }
             />
-            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/expressadmin/login" element={<AdminLogin />} />
             <Route path="/content-usage-policy" element={<ContentUsagePolicy />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/refund-policy" element={<RefundPolicy />} />
